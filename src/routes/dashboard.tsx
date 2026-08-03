@@ -9,37 +9,37 @@ import { characters } from "@/data/characters";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Your dashboard — Lumina" },
+      { title: "Area personale — FlirtSpace" },
       {
         name: "description",
         content:
-          "Manage your account, conversation history, favourite companions, credit balance and subscription.",
+          "Gestisci account, cronologia delle conversazioni, compagni preferiti, saldo crediti e abbonamento.",
       },
-      { property: "og:title", content: "Your dashboard — Lumina" },
+      { property: "og:title", content: "Area personale — FlirtSpace" },
       {
         property: "og:description",
-        content: "Conversation history, favourites, credits and subscription in one place.",
+        content: "Cronologia, preferiti, crediti e abbonamento in un unico posto.",
       },
     ],
   }),
   component: Dashboard,
 });
 
-/** Placeholder user. Replace with Supabase auth session + `profiles` row. */
+/** Utente di esempio. Da sostituire con la sessione e la tabella `profiles`. */
 const user = {
   name: "Alex Rivera",
   email: "alex@example.com",
-  member_since: "March 2026",
+  member_since: "marzo 2026",
   credits: 248,
   credits_total: 500,
   plan: "Premium",
-  renews: "12 Sept 2026",
+  renews: "12 settembre 2026",
 };
 
 const history = [
-  { id: "aurora", last: "You made it. I was just thinking about you…", when: "2h ago", count: 142 },
-  { id: "milo", last: "Okay so I have a terrible idea…", when: "Yesterday", count: 88 },
-  { id: "nadia", last: "Let's make this session count.", when: "3 days ago", count: 27 },
+  { id: "aurora", last: "Sei arrivato. Stavo giusto pensando a te…", when: "2 ore fa", count: 142 },
+  { id: "milo", last: "Ok, ho un'idea pessima…", when: "Ieri", count: 88 },
+  { id: "nadia", last: "Rendiamo utile questa sessione.", when: "3 giorni fa", count: 27 },
 ];
 
 function Dashboard() {
@@ -50,33 +50,33 @@ function Dashboard() {
       <section className="halo px-5 pt-14 pb-8">
         <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
           <div className="min-w-0">
-            <h1 className="truncate text-2xl font-bold sm:text-3xl">Welcome back, Alex</h1>
+            <h1 className="truncate text-2xl font-bold sm:text-3xl">Bentornato, Alex</h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Member since {user.member_since}
+              Iscritto da {user.member_since}
             </p>
           </div>
           <Button variant="glass" size="sm">
-            <Settings className="h-4 w-4" /> Settings
+            <Settings className="h-4 w-4" /> Impostazioni
           </Button>
         </div>
       </section>
 
       <section className="px-5 pb-20">
         <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-3">
-          {/* Left column */}
+          {/* Colonna sinistra */}
           <div className="space-y-6 lg:col-span-2">
-            {/* Credits */}
+            {/* Crediti */}
             <div className="surface-card rounded-2xl p-6">
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
                 <div className="min-w-0">
-                  <p className="text-sm text-muted-foreground">Credits balance</p>
+                  <p className="text-sm text-muted-foreground">Saldo crediti</p>
                   <p className="mt-1 flex items-center gap-2 font-display text-3xl font-bold">
                     <Zap className="h-6 w-6 text-primary" />
                     {user.credits}
                   </p>
                 </div>
                 <Button variant="hero" size="sm" asChild>
-                  <Link to="/pricing">Top up</Link>
+                  <Link to="/pricing">Ricarica</Link>
                 </Button>
               </div>
               <Progress
@@ -84,14 +84,14 @@ function Dashboard() {
                 className="mt-5 h-2 bg-secondary"
               />
               <p className="mt-2 text-xs text-muted-foreground">
-                {user.credits} of {user.credits_total} credits from your last pack remaining.
+                Ti restano {user.credits} crediti su {user.credits_total} dell'ultimo pacchetto.
               </p>
             </div>
 
-            {/* History */}
+            {/* Cronologia */}
             <div className="surface-card rounded-2xl p-6">
               <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-                <MessageSquare className="h-4 w-4 text-primary" /> Conversation history
+                <MessageSquare className="h-4 w-4 text-primary" /> Cronologia conversazioni
               </h2>
               <ul className="mt-4 divide-y divide-border/60">
                 {history.map((h) => {
@@ -117,7 +117,7 @@ function Dashboard() {
                         </div>
                         <div className="shrink-0 text-right">
                           <p className="text-xs text-muted-foreground">{h.when}</p>
-                          <p className="text-[11px] text-muted-foreground">{h.count} msgs</p>
+                          <p className="text-[11px] text-muted-foreground">{h.count} messaggi</p>
                         </div>
                       </Link>
                     </li>
@@ -126,10 +126,10 @@ function Dashboard() {
               </ul>
             </div>
 
-            {/* Favourites */}
+            {/* Preferiti */}
             <div className="surface-card rounded-2xl p-6">
               <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-                <Heart className="h-4 w-4 text-primary" /> Favourite characters
+                <Heart className="h-4 w-4 text-primary" /> Personaggi preferiti
               </h2>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {favourites.map((c) => (
@@ -155,13 +155,13 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Right column */}
+          {/* Colonna destra */}
           <div className="space-y-6">
             <div className="surface-card rounded-2xl p-6">
               <h2 className="font-display text-lg font-semibold">Account</h2>
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">Name</dt>
+                  <dt className="text-muted-foreground">Nome</dt>
                   <dd className="truncate">{user.name}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
@@ -174,24 +174,24 @@ function Dashboard() {
                 </div>
               </dl>
               <Button variant="glass" size="sm" className="mt-5 w-full">
-                Edit profile
+                Modifica profilo
               </Button>
             </div>
 
             <div className="surface-card rounded-2xl border-primary/40 p-6">
               <div className="flex items-center gap-2">
                 <Crown className="h-4 w-4 text-primary" />
-                <h2 className="font-display text-lg font-semibold">Subscription</h2>
+                <h2 className="font-display text-lg font-semibold">Abbonamento</h2>
               </div>
               <Badge className="mt-3 rounded-full bg-[image:var(--gradient-primary)] text-primary-foreground">
                 {user.plan}
               </Badge>
               <p className="mt-3 text-sm text-muted-foreground">
-                Long-term memory, priority speed and voice replies are active. Renews{" "}
-                {user.renews}.
+                Memoria a lungo termine, risposte prioritarie e risposte vocali sono attive. Si
+                rinnova il {user.renews}.
               </p>
               <Button variant="hero" size="sm" className="mt-5 w-full" asChild>
-                <Link to="/pricing">Upgrade to VIP</Link>
+                <Link to="/pricing">Passa a VIP</Link>
               </Button>
             </div>
           </div>

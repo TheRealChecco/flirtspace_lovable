@@ -4,13 +4,16 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /**
- * TODO(stripe): replace with a call to a server function that creates a
- * Stripe Checkout session for `plan.priceId` and redirects to session.url.
+ * TODO(stripe): sostituire con una server function che crea la sessione
+ * Stripe Checkout per `plan.priceId` e reindirizza a session.url.
  */
 function startCheckout(plan: Plan) {
-  console.info("[stripe placeholder] checkout for", plan.priceId);
-  window.alert(`Stripe checkout placeholder — ${plan.name} (${plan.credits} credits)`);
+  console.info("[stripe placeholder] checkout per", plan.priceId);
+  window.alert(`Checkout Stripe (placeholder) — ${plan.name}`);
 }
+
+/** Formattazione stabile lato server e client (separatore delle migliaia italiano). */
+const formatCredits = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 export function PricingSection({ compact = false }: { compact?: boolean }) {
   return (
@@ -25,18 +28,18 @@ export function PricingSection({ compact = false }: { compact?: boolean }) {
         >
           {plan.featured && (
             <span className="absolute -top-3 left-7 rounded-full bg-[image:var(--gradient-primary)] px-3 py-1 text-[11px] font-semibold text-primary-foreground">
-              Most popular
+              Il più scelto
             </span>
           )}
           <h3 className="font-display text-xl font-semibold">{plan.name}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{plan.blurb}</p>
           <div className="mt-6 flex items-end gap-1">
-            <span className="font-display text-4xl font-bold">${plan.price}</span>
-            <span className="pb-1.5 text-sm text-muted-foreground">one-time</span>
+            <span className="font-display text-4xl font-bold">{plan.price} €</span>
+            <span className="pb-1.5 text-sm text-muted-foreground">una tantum</span>
           </div>
           <p className="mt-2 flex items-center gap-1.5 text-sm text-primary">
             <Zap className="h-4 w-4" />
-            {plan.credits.toLocaleString()} credits
+            {formatCredits(plan.credits)} crediti
           </p>
 
           {!compact && (
@@ -56,7 +59,7 @@ export function PricingSection({ compact = false }: { compact?: boolean }) {
             className="mt-8 w-full"
             onClick={() => startCheckout(plan)}
           >
-            Get {plan.name}
+            Scegli {plan.name}
           </Button>
         </div>
       ))}

@@ -15,10 +15,12 @@ export const Route = createFileRoute("/chat/$characterId")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Chat unavailable — Lumina" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [{ title: "Chat non disponibile — FlirtSpace" }, { name: "robots", content: "noindex" }],
+      };
     }
     const { character } = loaderData;
-    const title = `Chat with ${character.name} — ${character.tagline} | Lumina`;
+    const title = `Chatta con ${character.name} — ${character.tagline} | FlirtSpace`;
     return {
       meta: [
         { title },
@@ -33,19 +35,20 @@ export const Route = createFileRoute("/chat/$characterId")({
 
 type Message = { id: string; role: "user" | "assistant"; text: string; time: string };
 
-const now = () =>
-  new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+const now = () => new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
 
 /**
- * TODO(ai): replace with a streaming call to a server function that talks to the
- * AI gateway, persists messages in Supabase and decrements the credit balance.
+ * TODO(ai): sostituire con una chiamata in streaming a una server function che parla
+ * con il gateway AI, salva i messaggi e scala il saldo crediti.
  */
 function mockReply(name: string, input: string): string {
   const replies = [
-    `That's interesting — tell me more about "${input.slice(0, 40)}".`,
-    `I've been thinking about that too. What made it come up today?`,
-    `Mm. I like how you put that. Let's stay with it for a second.`,
-    `Honestly? I'd do the same. But I'm curious what ${name === "Milo" ? "your gut" : "your heart"} says.`,
+    `Interessante — raccontami di più su "${input.slice(0, 40)}".`,
+    `Ci stavo pensando anch'io. Cosa te l'ha fatto venire in mente oggi?`,
+    `Mmh. Mi piace come l'hai detto. Restiamoci un attimo.`,
+    `Sinceramente? Farei lo stesso. Ma sono curiosa di sapere cosa ti dice ${
+      name === "Milo" ? "l'istinto" : "il cuore"
+    }.`,
   ];
   return replies[Math.floor(Math.random() * replies.length)] ?? replies[0]!;
 }
@@ -53,12 +56,16 @@ function mockReply(name: string, input: string): string {
 function ChatPage() {
   const { character } = Route.useLoaderData() as { character: Character };
   const [messages, setMessages] = useState<Message[]>([
-    { id: "greeting", role: "assistant", text: character.greeting, time: now() },
+    { id: "greeting", role: "assistant", text: character.greeting, time: "" },
   ]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [credits, setCredits] = useState(248);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMessages((m) => m.map((msg) => (msg.id === "greeting" ? { ...msg, time: now() } : msg)));
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -95,13 +102,13 @@ function ChatPage() {
     <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <SiteHeader />
 
-      {/* Character profile */}
+      {/* Profilo del personaggio */}
       <div className="z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto grid max-w-3xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
           <Link
             to="/characters"
             className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-accent/60"
-            aria-label="Back to characters"
+            aria-label="Torna ai personaggi"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -119,7 +126,7 @@ function ChatPage() {
             <div className="min-w-0">
               <p className="truncate font-display text-sm font-semibold">{character.name}</p>
               <p className="truncate text-xs text-muted-foreground">
-                {typing ? "typing…" : `${character.tagline} · online`}
+                {typing ? "sta scrivendo…" : `${character.tagline} · online`}
               </p>
             </div>
           </div>
@@ -130,7 +137,7 @@ function ChatPage() {
         </div>
       </div>
 
-      {/* Conversation */}
+      {/* Conversazione */}
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6">
           <div className="mx-auto flex flex-wrap justify-center gap-1.5">
@@ -192,7 +199,7 @@ function ChatPage() {
                 }
               }}
               rows={1}
-              placeholder={`Message ${character.name}...`}
+              placeholder={`Scrivi a ${character.name}...`}
               className="max-h-32 min-h-10 flex-1 resize-none bg-transparent px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground"
             />
             <Button
@@ -201,13 +208,13 @@ function ChatPage() {
               size="icon"
               className="h-10 w-10 shrink-0 rounded-xl"
               disabled={!input.trim() || typing}
-              aria-label="Send message"
+              aria-label="Invia messaggio"
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
           <p className="mt-2 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-            <Sparkle className="h-3 w-3" /> 1 credit per message · conversations are private
+            <Sparkle className="h-3 w-3" /> 1 credito per messaggio · le conversazioni sono private
           </p>
         </form>
       </div>

@@ -39,7 +39,7 @@ export function CharacterCard({ character }: { character: Character }) {
         </div>
         <Button variant="hero" className="mt-5 w-full" asChild>
           <Link to="/chat/$characterId" params={{ characterId: character.id }}>
-            Start conversation
+            Inizia la conversazione
           </Link>
         </Button>
       </div>

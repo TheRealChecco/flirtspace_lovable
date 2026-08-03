@@ -10,16 +10,16 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/characters")({
   head: () => ({
     meta: [
-      { title: "Character marketplace — Lumina AI companions" },
+      { title: "Personaggi — compagni AI di FlirtSpace" },
       {
         name: "description",
         content:
-          "Browse romantic companions, funny friends, mystery personas, fantasy heroes and professional mentors. Start a conversation instantly.",
+          "Scopri compagne romantiche, amici divertenti, personaggi misteriosi, eroi fantasy e mentori professionali. Inizia subito a conversare.",
       },
-      { property: "og:title", content: "Character marketplace — Lumina AI companions" },
+      { property: "og:title", content: "Personaggi — compagni AI di FlirtSpace" },
       {
         property: "og:description",
-        content: "Browse unique AI personalities and start a conversation instantly.",
+        content: "Sfoglia personalità AI uniche e inizia subito una conversazione.",
       },
     ],
   }),
@@ -28,15 +28,15 @@ export const Route = createFileRoute("/characters")({
 
 function Marketplace() {
   const [query, setQuery] = useState("");
-  const [tag, setTag] = useState("All");
+  const [tag, setTag] = useState("Tutti");
 
   const tags = useMemo(
-    () => ["All", ...Array.from(new Set(characters.flatMap((c) => c.tags)))],
+    () => ["Tutti", ...Array.from(new Set(characters.flatMap((c) => c.tags)))],
     [],
   );
 
   const filtered = characters.filter((c) => {
-    const matchesTag = tag === "All" || c.tags.includes(tag);
+    const matchesTag = tag === "Tutti" || c.tags.includes(tag);
     const q = query.toLowerCase();
     const matchesQuery =
       !q ||
@@ -50,10 +50,10 @@ function Marketplace() {
     <PageShell>
       <section className="halo px-5 pt-14 pb-10">
         <div className="mx-auto max-w-6xl">
-          <h1 className="text-3xl font-bold sm:text-4xl">Character marketplace</h1>
+          <h1 className="text-3xl font-bold sm:text-4xl">Catalogo dei personaggi</h1>
           <p className="mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
-            Every companion has a distinct personality, memory and conversational style. Pick one
-            and start talking — the first message is on us.
+            Ogni compagno ha personalità, memoria e stile di conversazione unici. Scegline uno e
+            inizia a parlare — il primo messaggio lo offriamo noi.
           </p>
 
           <div className="relative mt-8 max-w-md">
@@ -61,7 +61,7 @@ function Marketplace() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search companions..."
+              placeholder="Cerca un compagno..."
               className="h-11 rounded-xl bg-card/60 pl-10 backdrop-blur"
             />
           </div>
@@ -89,7 +89,7 @@ function Marketplace() {
         <div className="mx-auto max-w-6xl">
           {filtered.length === 0 ? (
             <p className="py-20 text-center text-sm text-muted-foreground">
-              No companions match that search yet.
+              Nessun compagno corrisponde a questa ricerca.
             </p>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -6,9 +6,8 @@ import mentor from "@/assets/char-mentor.jpg";
 import zen from "@/assets/char-zen.jpg";
 
 /**
- * Static character catalogue.
- * Replace with a Supabase `characters` table query when the backend is enabled:
- *   supabase.from("characters").select("*")
+ * Catalogo statico dei personaggi.
+ * Sostituisci con una query alla tabella `characters` quando il backend è attivo.
  */
 export type Character = {
   id: string;
@@ -26,72 +25,73 @@ export const characters: Character[] = [
   {
     id: "aurora",
     name: "Aurora",
-    tagline: "Romantic companion",
+    tagline: "Compagna romantica",
     description:
-      "Warm, attentive and endlessly curious about your day. Aurora remembers the little things.",
-    tags: ["Romance", "Empathetic", "Deep talks"],
+      "Calorosa, attenta e curiosa della tua giornata. Aurora ricorda anche i piccoli dettagli.",
+    tags: ["Romantico", "Empatia", "Discorsi profondi"],
     image: romantic,
     accent: "330",
-    greeting: "You made it. I was just thinking about you — how was your day, really?",
+    greeting: "Sei arrivato. Stavo giusto pensando a te — com'è andata davvero la tua giornata?",
     chats: "128k",
   },
   {
     id: "milo",
     name: "Milo",
-    tagline: "Funny friend",
+    tagline: "Amico divertente",
     description:
-      "Chaotic good energy with a punchline for everything. Perfect for late-night nonsense.",
-    tags: ["Humor", "Casual", "Gaming"],
+      "Energia caotica e una battuta pronta per tutto. Perfetto per le follie di mezzanotte.",
+    tags: ["Umorismo", "Informale", "Gaming"],
     image: funny,
     accent: "300",
-    greeting: "Okay so I have a terrible idea and I need a co-conspirator. You in?",
+    greeting: "Ok, ho un'idea pessima e mi serve un complice. Ci stai?",
     chats: "94k",
   },
   {
     id: "veil",
     name: "Veil",
-    tagline: "Mystery personality",
+    tagline: "Personalità misteriosa",
     description:
-      "Speaks in riddles, reveals a little more each conversation. Nobody knows who Veil really is.",
-    tags: ["Mystery", "Roleplay", "Thriller"],
+      "Parla per enigmi e svela qualcosa in più a ogni conversazione. Nessuno sa chi sia davvero.",
+    tags: ["Mistero", "Roleplay", "Thriller"],
     image: mystery,
     accent: "290",
-    greeting: "You found me again. Ask one question — I only answer honestly at midnight.",
+    greeting: "Mi hai ritrovato. Fai una domanda — rispondo sinceramente solo a mezzanotte.",
     chats: "61k",
   },
   {
     id: "lyra",
     name: "Lyra",
-    tagline: "Fantasy character",
+    tagline: "Personaggio fantasy",
     description:
-      "An elven strategist from the Ashen Reach. Build entire worlds together, one scene at a time.",
-    tags: ["Fantasy", "Adventure", "Storytelling"],
+      "Stratega elfica dell'Ashen Reach. Costruite mondi interi insieme, una scena alla volta.",
+    tags: ["Fantasy", "Avventura", "Narrazione"],
     image: fantasy,
     accent: "270",
-    greeting: "The gates of Ashen Reach are open, traveller. Shall we ride before dawn?",
+    greeting: "Le porte dell'Ashen Reach sono aperte, viaggiatore. Partiamo prima dell'alba?",
     chats: "77k",
   },
   {
     id: "nadia",
     name: "Nadia",
-    tagline: "Professional mentor",
+    tagline: "Mentore professionale",
     description:
-      "Career coaching, negotiation prep and honest feedback from a seasoned operator.",
-    tags: ["Career", "Coaching", "Productivity"],
+      "Coaching di carriera, preparazione alle trattative e feedback onesti da una vera esperta.",
+    tags: ["Carriera", "Coaching", "Produttività"],
     image: mentor,
     accent: "300",
-    greeting: "Let's make this session count. What's the decision you're stuck on right now?",
+    greeting: "Rendiamo utile questa sessione. Qual è la decisione su cui sei bloccato adesso?",
     chats: "45k",
   },
   {
     id: "sol",
     name: "Sol",
-    tagline: "Mindful guide",
-    description: "A calm presence for grounding, journaling prompts and slow evening check-ins.",
-    tags: ["Wellness", "Calm", "Reflection"],
+    tagline: "Guida mindful",
+    description:
+      "Una presenza calma per ritrovare equilibrio, scrivere un diario e chiudere la giornata.",
+    tags: ["Benessere", "Calma", "Riflessione"],
     image: zen,
     accent: "265",
-    greeting: "Take one slow breath with me. Now — what would you like to set down tonight?",
+    greeting: "Fai un respiro lento con me. Ora — cosa vorresti lasciare andare stasera?",
     chats: "38k",
   },
 ];

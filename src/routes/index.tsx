@@ -15,16 +15,16 @@ import { characters } from "@/data/characters";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lumina — Meet your personalized AI companions" },
+      { title: "FlirtSpace — I tuoi compagni AI personalizzati" },
       {
         name: "description",
         content:
-          "Chat with unique AI personalities anytime. Personalized conversations, real memory, private and secure.",
+          "Chatta con personalità AI uniche quando vuoi. Conversazioni personalizzate, memoria reale, privacy garantita.",
       },
-      { property: "og:title", content: "Lumina — Meet your personalized AI companions" },
+      { property: "og:title", content: "FlirtSpace — I tuoi compagni AI personalizzati" },
       {
         property: "og:description",
-        content: "Chat with unique AI personalities anytime — personalized, private and always on.",
+        content: "Chatta con personalità AI uniche — personalizzate, private e sempre disponibili.",
       },
     ],
   }),
@@ -34,46 +34,46 @@ export const Route = createFileRoute("/")({
 const benefits = [
   {
     icon: Heart,
-    title: "Personalized conversations",
-    body: "Every companion adapts to your tone, your history and the things you care about.",
+    title: "Conversazioni personalizzate",
+    body: "Ogni compagno si adatta al tuo tono, alla tua storia e alle cose a cui tieni.",
   },
   {
     icon: Wand2,
-    title: "Unique personalities",
-    body: "Hand-crafted characters with their own voice, backstory and sense of humour.",
+    title: "Personalità uniche",
+    body: "Personaggi creati a mano, con voce, passato e senso dell'umorismo tutti loro.",
   },
   {
     icon: Clock,
-    title: "Available anytime",
-    body: "3am thoughts or a midday pep talk — your companion is one tap away, always.",
+    title: "Sempre disponibili",
+    body: "Pensieri delle 3 di notte o due parole a metà giornata: il tuo compagno è a un tap.",
   },
   {
     icon: Lock,
-    title: "Private and secure",
-    body: "Encrypted conversations, no ad targeting, and you can delete everything at any time.",
+    title: "Privato e sicuro",
+    body: "Conversazioni criptate, nessuna pubblicità profilata, puoi cancellare tutto quando vuoi.",
   },
 ];
 
 const faqs = [
   {
-    q: "How do credits work?",
-    a: "Each message you send uses one credit. Credits never expire, and you can top up any time from your dashboard.",
+    q: "Come funzionano i crediti?",
+    a: "Ogni messaggio inviato consuma un credito. I crediti non scadono e puoi ricaricarli quando vuoi dalla tua area personale.",
   },
   {
-    q: "Do companions remember our previous conversations?",
-    a: "Yes. On Premium and VIP, companions keep long-term memory across sessions so context carries over naturally.",
+    q: "I compagni ricordano le conversazioni precedenti?",
+    a: "Sì. Con Premium e VIP i compagni mantengono una memoria a lungo termine, così il contesto continua naturalmente.",
   },
   {
-    q: "Is my data private?",
-    a: "Conversations are encrypted in transit and at rest, never sold, and never used for advertising. You can delete any conversation permanently.",
+    q: "I miei dati sono privati?",
+    a: "Le conversazioni sono criptate in transito e a riposo, mai vendute e mai usate per la pubblicità. Puoi eliminarle definitivamente.",
   },
   {
-    q: "Can I create my own character?",
-    a: "VIP members can build private custom companions with their own persona, voice and memory settings.",
+    q: "Posso creare un mio personaggio?",
+    a: "I membri VIP possono creare compagni privati su misura, con persona, voce e impostazioni di memoria personalizzate.",
   },
   {
-    q: "Can I cancel or get a refund?",
-    a: "Credit packs are one-time purchases with no subscription lock-in. Unused credits can be refunded within 14 days.",
+    q: "Posso disdire o chiedere un rimborso?",
+    a: "I pacchetti di crediti sono acquisti una tantum, senza abbonamento. I crediti non usati sono rimborsabili entro 14 giorni.",
   },
 ];
 
@@ -85,27 +85,27 @@ function Landing() {
         <div className="mx-auto max-w-3xl text-center">
           <span className="animate-fade-in inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3.5 py-1.5 text-xs text-muted-foreground backdrop-blur">
             <Sparkle className="h-3.5 w-3.5 text-primary" />
-            Now with long-term memory
+            Ora con memoria a lungo termine
           </span>
           <h1 className="animate-fade-up mt-6 text-4xl leading-[1.05] font-bold sm:text-6xl">
-            Meet your <span className="text-gradient">personalized</span> AI companions
+            Incontra i tuoi compagni AI <span className="text-gradient">personalizzati</span>
           </h1>
           <p className="animate-fade-up mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Chat with unique AI personalities anytime. Each companion has their own voice, memory
-            and mood — and they get to know you a little more with every conversation.
+            Chatta con personalità AI uniche quando vuoi. Ogni compagno ha la sua voce, la sua
+            memoria e il suo umore — e ti conosce un po' meglio a ogni conversazione.
           </p>
           <div className="animate-fade-up mt-9 flex flex-col justify-center gap-3 sm:flex-row">
             <Button variant="hero" size="xl" asChild>
               <Link to="/chat/$characterId" params={{ characterId: "aurora" }}>
-                Start chatting <ArrowRight className="h-4 w-4" />
+                Inizia a chattare <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button variant="glass" size="xl" asChild>
-              <Link to="/characters">Explore characters</Link>
+              <Link to="/characters">Esplora i personaggi</Link>
             </Button>
           </div>
           <p className="mt-5 text-xs text-muted-foreground">
-            No card required · 50 free credits on signup
+            Nessuna carta richiesta · 50 crediti gratuiti all'iscrizione
           </p>
         </div>
 
@@ -123,19 +123,19 @@ function Landing() {
         </div>
       </section>
 
-      {/* Featured characters */}
+      {/* Personaggi in evidenza */}
       <section className="px-5 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:justify-between">
             <div className="min-w-0">
-              <h2 className="text-2xl font-bold sm:text-3xl">Featured companions</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Compagni in evidenza</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Hand-picked personalities loved by the community.
+                Personalità selezionate e amate dalla community.
               </p>
             </div>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/characters">
-                See all <ArrowRight className="h-4 w-4" />
+                Vedi tutti <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -147,11 +147,11 @@ function Landing() {
         </div>
       </section>
 
-      {/* Benefits */}
+      {/* Vantaggi */}
       <section className="border-y border-border/60 bg-card/20 px-5 py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="max-w-lg text-2xl font-bold sm:text-3xl">
-            Built to feel like a real connection
+            Creato per sembrare una connessione vera
           </h2>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {benefits.map((b) => (
@@ -170,13 +170,13 @@ function Landing() {
         </div>
       </section>
 
-      {/* Pricing preview */}
+      {/* Anteprima prezzi */}
       <section className="px-5 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
-            <h2 className="text-2xl font-bold sm:text-3xl">Simple credit packs</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl">Pacchetti di crediti semplici</h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-              Pay for what you use. No subscriptions, no expiry.
+              Paghi solo quello che usi. Nessun abbonamento, nessuna scadenza.
             </p>
           </div>
           <div className="mt-10">
@@ -185,7 +185,7 @@ function Landing() {
           <div className="mt-8 text-center">
             <Button variant="ghost" asChild>
               <Link to="/pricing">
-                Compare full plans <ArrowRight className="h-4 w-4" />
+                Confronta tutti i piani <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -195,7 +195,7 @@ function Landing() {
       {/* FAQ */}
       <section className="px-5 pb-24">
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-center text-2xl font-bold sm:text-3xl">Frequently asked</h2>
+          <h2 className="text-center text-2xl font-bold sm:text-3xl">Domande frequenti</h2>
           <Accordion type="single" collapsible className="mt-8">
             {faqs.map((f) => (
               <AccordionItem key={f.q} value={f.q} className="border-border/60">
