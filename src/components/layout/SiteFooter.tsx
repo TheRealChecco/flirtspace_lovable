@@ -1,29 +1,29 @@
 import { Link } from "@tanstack/react-router";
-import { Sparkle } from "lucide-react";
+import logo from "@/assets/flirtspace-logo.png.asset.json";
 
 const groups = [
   {
-    title: "Product",
+    title: "Prodotto",
     links: [
-      { label: "Characters", to: "/characters" as const },
-      { label: "Pricing", to: "/pricing" as const },
-      { label: "Dashboard", to: "/dashboard" as const },
+      { label: "Personaggi", to: "/characters" as const },
+      { label: "Prezzi", to: "/pricing" as const },
+      { label: "Area personale", to: "/dashboard" as const },
     ],
   },
   {
-    title: "Company",
+    title: "Azienda",
     links: [
-      { label: "About", to: "/" as const },
-      { label: "Careers", to: "/" as const },
+      { label: "Chi siamo", to: "/" as const },
+      { label: "Lavora con noi", to: "/" as const },
       { label: "Blog", to: "/" as const },
     ],
   },
   {
-    title: "Legal",
+    title: "Legale",
     links: [
       { label: "Privacy", to: "/" as const },
-      { label: "Terms", to: "/" as const },
-      { label: "Safety", to: "/" as const },
+      { label: "Termini", to: "/" as const },
+      { label: "Sicurezza", to: "/" as const },
     ],
   },
 ];
@@ -34,14 +34,21 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-xl bg-[image:var(--gradient-primary)]">
-              <Sparkle className="h-4 w-4 text-primary-foreground" />
+            <img
+              src={logo.url}
+              alt="Logo FlirtSpace"
+              width={512}
+              height={512}
+              loading="lazy"
+              className="h-9 w-9 rounded-xl object-cover"
+            />
+            <span className="font-display text-lg font-semibold">
+              Flirt<span className="text-gradient">Space</span>
             </span>
-            <span className="font-display text-lg font-semibold">Lumina</span>
           </div>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-            Personalized AI companions with memory, personality and presence — available whenever
-            you need them.
+            Compagni AI personalizzati con memoria, personalità e presenza — disponibili ogni volta
+            che ne hai bisogno.
           </p>
         </div>
 
@@ -65,7 +72,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border/60 px-5 py-6">
         <p className="mx-auto max-w-6xl text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Lumina AI. All conversations are private and encrypted.
+          © {new Date().getFullYear()} FlirtSpace. Tutte le conversazioni sono private e criptate.
         </p>
       </div>
     </footer>
