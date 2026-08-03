@@ -4,7 +4,7 @@ import { ArrowLeft, Send, Sparkle, Zap } from "lucide-react";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getCharacter } from "@/data/characters";
+import { getCharacter, type Character } from "@/data/characters";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/chat/$characterId")({
@@ -40,18 +40,18 @@ const now = () =>
  * TODO(ai): replace with a streaming call to a server function that talks to the
  * AI gateway, persists messages in Supabase and decrements the credit balance.
  */
-function mockReply(name: string, input: string) {
+function mockReply(name: string, input: string): string {
   const replies = [
     `That's interesting — tell me more about "${input.slice(0, 40)}".`,
     `I've been thinking about that too. What made it come up today?`,
     `Mm. I like how you put that. Let's stay with it for a second.`,
     `Honestly? I'd do the same. But I'm curious what ${name === "Milo" ? "your gut" : "your heart"} says.`,
   ];
-  return replies[Math.floor(Math.random() * replies.length)];
+  return replies[Math.floor(Math.random() * replies.length)] ?? replies[0]!;
 }
 
 function ChatPage() {
-  const { character } = Route.useLoaderData();
+  const { character } = Route.useLoaderData() as { character: Character };
   const [messages, setMessages] = useState<Message[]>([
     { id: "greeting", role: "assistant", text: character.greeting, time: now() },
   ]);
@@ -134,7 +134,7 @@ function ChatPage() {
       <main className="flex-1">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6 pb-40">
           <div className="mx-auto flex flex-wrap justify-center gap-1.5">
-            {character.tags.map((t) => (
+            {character.tags.map((t: string) => (
               <Badge key={t} variant="secondary" className="rounded-full font-normal">
                 {t}
               </Badge>
