@@ -92,11 +92,11 @@ function ChatPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <SiteHeader />
 
       {/* Character profile */}
-      <div className="sticky top-16 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+      <div className="z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto grid max-w-3xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
           <Link
             to="/characters"
@@ -131,8 +131,8 @@ function ChatPage() {
       </div>
 
       {/* Conversation */}
-      <main className="flex-1">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6 pb-40">
+      <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6">
           <div className="mx-auto flex flex-wrap justify-center gap-1.5">
             {character.tags.map((t: string) => (
               <Badge key={t} variant="secondary" className="rounded-full font-normal">
@@ -179,7 +179,7 @@ function ChatPage() {
       </main>
 
       {/* Composer */}
-      <div className="fixed inset-x-0 bottom-0 border-t border-border/60 bg-background/85 backdrop-blur-xl">
+      <div className="border-t border-border/60 bg-background/85 backdrop-blur-xl">
         <form onSubmit={send} className="mx-auto max-w-3xl px-4 py-4">
           <div className="flex items-end gap-2 rounded-2xl border border-border/70 bg-card/60 p-2 focus-within:border-primary/50">
             <textarea
