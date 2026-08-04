@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { CharacterCard } from "@/components/CharacterCard";
+import { Reveal } from "@/components/Reveal";
 import { Input } from "@/components/ui/input";
 import { characters } from "@/data/characters";
 import { cn } from "@/lib/utils";
