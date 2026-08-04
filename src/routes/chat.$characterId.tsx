@@ -1,9 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Send, Sparkle, Zap } from "lucide-react";
+import { ArrowLeft, Check, CheckCheck, Send, Sparkle, Zap } from "lucide-react";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { getCharacter, type Character } from "@/data/characters";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +15,10 @@ export const Route = createFileRoute("/chat/$characterId")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Chat non disponibile — FlirtSpace" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Chat non disponibile — FlirtSpace" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const { character } = loaderData;
@@ -62,6 +64,13 @@ function ChatPage() {
   const [typing, setTyping] = useState(false);
   const [credits, setCredits] = useState(248);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const taRef = useRef<HTMLTextAreaElement>(null);
+
+  const suggestions = [
+    "Raccontami qualcosa di te",
+    "Com'è andata la tua giornata?",
+    "Ho bisogno di un consiglio",
+  ];
 
   useEffect(() => {
     setMessages((m) => m.map((msg) => (msg.id === "greeting" ? { ...msg, time: now() } : msg)));
@@ -71,12 +80,18 @@ function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
-  const send = (e: React.FormEvent) => {
-    e.preventDefault();
-    const text = input.trim();
-    if (!text || typing) return;
+  useEffect(() => {
+    const el = taRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+  }, [input]);
 
-    setMessages((m) => [...m, { id: crypto.randomUUID(), role: "user", text, time: now() }]);
+  const submit = (text: string) => {
+    const value = text.trim();
+    if (!value || typing) return;
+
+    setMessages((m) => [...m, { id: crypto.randomUUID(), role: "user", text: value, time: now() }]);
     setInput("");
     setCredits((c) => Math.max(0, c - 1));
     setTyping(true);
@@ -88,7 +103,7 @@ function ChatPage() {
           {
             id: crypto.randomUUID(),
             role: "assistant",
-            text: mockReply(character.name, text),
+            text: mockReply(character.name, value),
             time: now(),
           },
         ]);
@@ -97,6 +112,13 @@ function ChatPage() {
       1100 + Math.random() * 900,
     );
   };
+
+  const send = (e: React.FormEvent) => {
+    e.preventDefault();
+    submit(input);
+  };
+
+  const lastUserId = [...messages].reverse().find((m) => m.role === "user")?.id;
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background">
@@ -107,7 +129,7 @@ function ChatPage() {
         <div className="mx-auto grid max-w-3xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
           <Link
             to="/characters"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-accent/60"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full transition-colors hover:bg-accent/60"
             aria-label="Torna ai personaggi"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -119,18 +141,22 @@ function ChatPage() {
                 alt={character.name}
                 width={640}
                 height={640}
-                className="h-10 w-10 rounded-full object-cover"
+                className="h-10 w-10 rounded-full object-cover ring-2 ring-primary/25"
               />
               <span className="absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full border-2 border-background bg-emerald-400" />
             </div>
             <div className="min-w-0">
               <p className="truncate font-display text-sm font-semibold">{character.name}</p>
               <p className="truncate text-xs text-muted-foreground">
-                {typing ? "sta scrivendo…" : `${character.tagline} · online`}
+                {typing ? (
+                  <span className="text-primary">sta scrivendo…</span>
+                ) : (
+                  `${character.tagline} · online`
+                )}
               </p>
             </div>
           </div>
-          <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-border/70 bg-card/60 px-3 py-1.5 text-xs">
+          <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-border/70 bg-card/60 px-3 py-1.5 text-xs backdrop-blur">
             <Zap className="h-3.5 w-3.5 text-primary" />
             <span className="font-medium">{credits}</span>
           </span>
@@ -138,47 +164,94 @@ function ChatPage() {
       </div>
 
       {/* Conversazione */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6">
-          <div className="mx-auto flex flex-wrap justify-center gap-1.5">
-            {character.tags.map((t: string) => (
-              <Badge key={t} variant="secondary" className="rounded-full font-normal">
-                {t}
-              </Badge>
-            ))}
+      <main className="relative flex-1 overflow-y-auto">
+        <div aria-hidden className="grid-bg pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto flex max-w-3xl flex-col gap-3 px-4 py-6">
+          {/* Intestazione conversazione */}
+          <div className="mx-auto mb-2 flex flex-col items-center text-center">
+            <img
+              src={character.image}
+              alt=""
+              width={640}
+              height={640}
+              className="h-16 w-16 rounded-full object-cover ring-2 ring-primary/25"
+            />
+            <p className="mt-3 font-display text-base font-semibold">{character.name}</p>
+            <p className="mt-1 max-w-xs text-xs leading-relaxed text-muted-foreground">
+              {character.description}
+            </p>
+            <span className="mt-4 rounded-full border border-border/60 bg-card/50 px-3 py-1 text-[11px] text-muted-foreground backdrop-blur">
+              Oggi
+            </span>
           </div>
 
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={cn(
-                "animate-fade-up flex max-w-[85%] flex-col gap-1 sm:max-w-[70%]",
-                m.role === "user" ? "self-end items-end" : "self-start items-start",
-              )}
-            >
+          {messages.map((m, i) => {
+            const prev = messages[i - 1];
+            const grouped = prev?.role === m.role;
+            return (
               <div
+                key={m.id}
                 className={cn(
-                  "rounded-2xl px-4 py-3 text-sm leading-relaxed",
-                  m.role === "user"
-                    ? "rounded-br-md bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-glow)]"
-                    : "surface-card rounded-bl-md text-foreground",
+                  "animate-fade-up flex max-w-[85%] items-end gap-2 sm:max-w-[70%]",
+                  m.role === "user" ? "self-end flex-row-reverse" : "self-start",
+                  grouped ? "mt-0" : "mt-2",
                 )}
               >
-                {m.text}
+                {m.role === "assistant" ? (
+                  <img
+                    src={character.image}
+                    alt=""
+                    width={640}
+                    height={640}
+                    className={cn(
+                      "h-7 w-7 shrink-0 rounded-full object-cover",
+                      grouped && "invisible",
+                    )}
+                  />
+                ) : null}
+                <div className={cn("flex flex-col gap-1", m.role === "user" && "items-end")}>
+                  <div
+                    className={cn(
+                      "px-4 py-2.5 text-sm leading-relaxed",
+                      m.role === "user"
+                        ? "rounded-2xl rounded-br-md bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-glow)]"
+                        : "surface-card rounded-2xl rounded-bl-md text-foreground",
+                    )}
+                  >
+                    {m.text}
+                  </div>
+                  <span className="flex items-center gap-1 px-1 text-[10px] text-muted-foreground">
+                    {m.time}
+                    {m.role === "user" &&
+                      (m.id === lastUserId && typing ? (
+                        <Check className="h-3 w-3" />
+                      ) : (
+                        <CheckCheck className="h-3 w-3 text-primary" />
+                      ))}
+                  </span>
+                </div>
               </div>
-              <span className="px-1 text-[11px] text-muted-foreground">{m.time}</span>
-            </div>
-          ))}
+            );
+          })}
 
           {typing && (
-            <div className="surface-card flex w-16 items-center justify-center gap-1 self-start rounded-2xl rounded-bl-md px-4 py-4">
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  className="animate-blink h-1.5 w-1.5 rounded-full bg-primary"
-                  style={{ animationDelay: `${i * 0.18}s` }}
-                />
-              ))}
+            <div className="animate-fade-in flex items-end gap-2 self-start">
+              <img
+                src={character.image}
+                alt=""
+                width={640}
+                height={640}
+                className="h-7 w-7 shrink-0 rounded-full object-cover"
+              />
+              <div className="surface-card flex w-16 items-center justify-center gap-1 rounded-2xl rounded-bl-md px-4 py-4">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className="animate-blink h-1.5 w-1.5 rounded-full bg-primary"
+                    style={{ animationDelay: `${i * 0.18}s` }}
+                  />
+                ))}
+              </div>
             </div>
           )}
           <div ref={bottomRef} />
@@ -187,15 +260,32 @@ function ChatPage() {
 
       {/* Composer */}
       <div className="border-t border-border/60 bg-background/85 backdrop-blur-xl">
-        <form onSubmit={send} className="mx-auto max-w-3xl px-4 py-4">
-          <div className="flex items-end gap-2 rounded-2xl border border-border/70 bg-card/60 p-2 focus-within:border-primary/50">
+        <div className="mx-auto max-w-3xl px-4 pt-3">
+          {messages.length <= 1 && !typing && (
+            <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
+              {suggestions.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => submit(s)}
+                  className="shrink-0 rounded-full border border-border/70 bg-card/60 px-3.5 py-1.5 text-xs text-muted-foreground backdrop-blur transition-colors hover:border-primary/50 hover:text-foreground"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <form onSubmit={send} className="mx-auto max-w-3xl px-4 pt-2 pb-4">
+          <div className="flex items-end gap-2 rounded-2xl border border-border/70 bg-card/60 p-2 backdrop-blur transition-colors focus-within:border-primary/50">
             <textarea
+              ref={taRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  send(e as unknown as React.FormEvent);
+                  submit(input);
                 }
               }}
               rows={1}
