@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { CharacterCard } from "@/components/CharacterCard";
+import { Reveal } from "@/components/Reveal";
 import { Input } from "@/components/ui/input";
 import { characters } from "@/data/characters";
 import { cn } from "@/lib/utils";
@@ -48,10 +49,14 @@ function Marketplace() {
 
   return (
     <PageShell>
-      <section className="halo px-5 pt-14 pb-10">
+      <section className="halo relative overflow-hidden px-5 pt-14 pb-10">
+        <div aria-hidden className="grid-bg pointer-events-none absolute inset-0 -z-10" />
         <div className="mx-auto max-w-6xl">
-          <h1 className="text-3xl font-bold sm:text-4xl">Catalogo dei personaggi</h1>
-          <p className="mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
+          <span className="eyebrow">Catalogo</span>
+          <h1 className="animate-fade-up mt-3 text-4xl font-bold sm:text-5xl">
+            Trova il compagno <span className="text-gradient">giusto per te</span>
+          </h1>
+          <p className="animate-fade-up mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
             Ogni compagno ha personalità, memoria e stile di conversazione unici. Scegline uno e
             inizia a parlare — il primo messaggio lo offriamo noi.
           </p>
@@ -62,26 +67,31 @@ function Marketplace() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Cerca un compagno..."
-              className="h-11 rounded-xl bg-card/60 pl-10 backdrop-blur"
+              className="h-12 rounded-2xl bg-card/60 pl-10 backdrop-blur"
             />
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible">
             {tags.map((t) => (
               <button
                 key={t}
                 onClick={() => setTag(t)}
                 className={cn(
-                  "rounded-full border border-border/70 px-3.5 py-1.5 text-xs transition-colors",
+                  "shrink-0 rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300",
                   tag === t
-                    ? "border-primary/60 bg-accent text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "border-primary/60 bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-glow)]"
+                    : "border-border/70 text-muted-foreground hover:border-primary/40 hover:text-foreground",
                 )}
               >
                 {t}
               </button>
             ))}
           </div>
+
+          <p className="mt-4 text-xs text-muted-foreground">
+            {filtered.length} compagn{filtered.length === 1 ? "o" : "i"} disponibil
+            {filtered.length === 1 ? "e" : "i"}
+          </p>
         </div>
       </section>
 
@@ -93,8 +103,10 @@ function Marketplace() {
             </p>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((c) => (
-                <CharacterCard key={c.id} character={c} />
+              {filtered.map((c, i) => (
+                <Reveal key={c.id} delay={Math.min(i, 5) * 70}>
+                  <CharacterCard character={c} />
+                </Reveal>
               ))}
             </div>
           )}
