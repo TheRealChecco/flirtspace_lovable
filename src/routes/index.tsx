@@ -145,19 +145,18 @@ function Landing() {
           </span>
 
           <h1 className="animate-fade-up mt-7 text-[2.6rem] leading-[1.02] font-bold sm:text-6xl lg:text-7xl">
-            Incontra i tuoi compagni AI{" "}
-            <span className="text-gradient block sm:inline">personalizzati</span>
+            Incontra compagni IA che{" "}
+            <span className="text-gradient block sm:inline">si connettono davvero.</span>
           </h1>
 
           <p className="animate-fade-up mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Chatta con personalità AI uniche quando vuoi. Ogni compagno ha la sua voce, la sua
-            memoria e il suo umore — e ti conosce un po' meglio a ogni conversazione.
+            Vivi conversazioni personalizzate con personalità IA splendidamente create.
           </p>
 
           <div className="animate-fade-up mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Button variant="hero" size="xl" className="animate-pulse-ring" asChild>
               <Link to="/chat/$characterId" params={{ characterId: "aurora" }}>
-                Inizia a chattare gratis <ArrowRight className="h-4 w-4" />
+                Inizia a chattare <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button variant="glass" size="xl" asChild>
