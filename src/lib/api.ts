@@ -14,9 +14,9 @@ import type {
  * del database, quindi ogni utente vede solo i propri dati.
  */
 
-function unwrap<T>({ data, error }: { data: T | null; error: { message: string } | null }): T {
-  if (error) throw new Error(error.message);
-  return data as T;
+function unwrap<T>(res: { data: T | null; error: { message: string } | null }): NonNullable<T> {
+  if (res.error) throw new Error(res.error.message);
+  return res.data as NonNullable<T>;
 }
 
 /* ---------------------------------- Profilo --------------------------------- */
