@@ -1,18 +1,31 @@
-import { Link } from "@tanstack/react-router";
-import { Menu, Sparkles, X } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { LogOut, Menu, Sparkles, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/flirtspace-logo.png.asset.json";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 const nav = [
   { to: "/characters", label: "Personaggi" },
   { to: "/pricing", label: "Prezzi" },
-  { to: "/dashboard", label: "Area personale" },
 ] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  async function handleSignOut() {
+    setOpen(false);
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await signOut();
+    void navigate({ to: "/auth", replace: true });
+  }
+
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -64,14 +77,29 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/dashboard">Accedi</Link>
-          </Button>
-          <Button variant="hero" size="sm" asChild>
-            <Link to="/characters">
-              <Sparkles className="h-4 w-4" /> Inizia gratis
-            </Link>
-          </Button>
+          {user ? (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/dashboard">
+                  <User className="h-4 w-4" /> Area personale
+                </Link>
+              </Button>
+              <Button variant="glass" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4" /> Esci
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/auth">Accedi</Link>
+              </Button>
+              <Button variant="hero" size="sm" asChild>
+                <Link to="/auth">
+                  <Sparkles className="h-4 w-4" /> Inizia gratis
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -98,14 +126,31 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Button variant="hero" size="lg" className="mt-3" asChild>
-              <Link to="/characters" onClick={() => setOpen(false)}>
-                <Sparkles className="h-4 w-4" /> Inizia gratis
-              </Link>
-            </Button>
-            <p className="mt-2 text-center text-[11px] text-muted-foreground">
-              50 crediti gratuiti · nessuna carta richiesta
-            </p>
+            {user ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
+                >
+                  Area personale
+                </Link>
+                <Button variant="glass" size="lg" className="mt-3" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4" /> Esci
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="hero" size="lg" className="mt-3" asChild>
+                  <Link to="/auth" onClick={() => setOpen(false)}>
+                    <Sparkles className="h-4 w-4" /> Inizia gratis
+                  </Link>
+                </Button>
+                <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                  50 crediti gratuiti · nessuna carta richiesta
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}
