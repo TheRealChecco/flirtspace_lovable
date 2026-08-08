@@ -10,8 +10,9 @@ import {
   ShieldCheck,
   MessageCircle,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { PageShell } from "@/components/layout/PageShell";
-import { CharacterCard } from "@/components/CharacterCard";
+import { CharacterCard, CharacterCardSkeleton } from "@/components/CharacterCard";
 import { PricingSection } from "@/components/PricingSection";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { characters } from "@/data/characters";
+import { listCharacters } from "@/lib/api";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -133,6 +134,11 @@ const faqs = [
 ];
 
 function Landing() {
+  const { data, isLoading } = useQuery({ queryKey: ["public-characters"], queryFn: listCharacters });
+  const list = data ?? [];
+  const firstSlug = list[0]?.slug ?? "";
+  const featuredPool = list.filter((c) => c.is_featured);
+  const featured = (featuredPool.length > 0 ? featuredPool : list).slice(0, 3);
   return (
     <PageShell>
       {/* Hero */}
@@ -155,7 +161,7 @@ function Landing() {
 
           <div className="animate-fade-up mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Button variant="hero" size="xl" className="animate-pulse-ring" asChild>
-              <Link to="/chat/$characterId" params={{ characterId: "aurora" }}>
+              <Link to={firstSlug ? "/chat/$characterId" : "/characters"} params={firstSlug ? { characterId: firstSlug } : {}}>
                 Inizia a chattare <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -180,16 +186,19 @@ function Landing() {
         {/* Prova sociale */}
         <div className="mx-auto mt-14 flex max-w-md flex-col items-center gap-3">
           <div className="animate-float flex -space-x-4">
-            {characters.slice(0, 5).map((c) => (
-              <img
-                key={c.id}
-                src={c.image}
-                alt={c.name}
-                width={640}
-                height={640}
-                className="h-13 w-13 rounded-full border-2 border-background object-cover shadow-[var(--shadow-card)] transition-transform duration-300 hover:z-10 hover:scale-110 sm:h-16 sm:w-16"
-              />
-            ))}
+            {list
+              .filter((c) => c.avatar)
+              .slice(0, 5)
+              .map((c) => (
+                <img
+                  key={c.id}
+                  src={c.avatar ?? ""}
+                  alt={c.name ?? "Personaggio"}
+                  width={640}
+                  height={640}
+                  className="h-13 w-13 rounded-full border-2 border-background object-cover shadow-[var(--shadow-card)] transition-transform duration-300 hover:z-10 hover:scale-110 sm:h-16 sm:w-16"
+                />
+              ))}
           </div>
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="flex">
@@ -234,11 +243,13 @@ function Landing() {
           </Reveal>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {characters.slice(0, 3).map((c, i) => (
-              <Reveal key={c.id} delay={i * 90}>
-                <CharacterCard character={c} />
-              </Reveal>
-            ))}
+            {isLoading
+              ? Array.from({ length: 3 }).map((_, i) => <CharacterCardSkeleton key={i} />)
+              : featured.map((c, i) => (
+                  <Reveal key={c.id} delay={i * 90}>
+                    <CharacterCard character={c} />
+                  </Reveal>
+                ))}
           </div>
         </div>
       </section>

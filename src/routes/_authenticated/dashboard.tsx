@@ -156,12 +156,12 @@ function Dashboard() {
                     <li key={conv.id}>
                       <Link
                         to="/chat/$characterId"
-                        params={{ characterId: conv.character.slug }}
+                        params={{ characterId: conv.character.slug ?? "" }}
                         className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 py-3.5 transition-opacity hover:opacity-80"
                       >
                         <img
-                          src={imageForSlug(conv.character.slug) ?? conv.character.avatar ?? ""}
-                          alt={conv.character.name}
+                          src={conv.character.avatar ?? imageForSlug(conv.character.slug ?? "") ?? ""}
+                          alt={conv.character.name ?? "Personaggio"}
                           loading="lazy"
                           width={640}
                           height={640}
@@ -198,12 +198,12 @@ function Dashboard() {
                     <Link
                       key={fav.id}
                       to="/chat/$characterId"
-                      params={{ characterId: fav.character.slug }}
+                      params={{ characterId: fav.character.slug ?? "" }}
                       className="group rounded-xl border border-border/60 p-3 text-center transition-colors hover:border-primary/50"
                     >
                       <img
-                        src={imageForSlug(fav.character.slug) ?? fav.character.avatar ?? ""}
-                        alt={fav.character.name}
+                        src={fav.character.avatar ?? imageForSlug(fav.character.slug ?? "") ?? ""}
+                        alt={fav.character.name ?? "Personaggio"}
                         loading="lazy"
                         width={640}
                         height={640}

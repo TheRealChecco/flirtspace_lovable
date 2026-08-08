@@ -16,45 +16,180 @@ export type Database = {
     Tables: {
       characters: {
         Row: {
+          age: number | null
           avatar: string | null
+          biography: string
+          character_instructions: string
+          clothing_style: string | null
+          conversation_examples: string
           created_at: string
           description: string
+          display_name: string | null
+          eye_color: string | null
+          forbidden_behaviors: string
+          gender: string | null
           greeting: string | null
+          hair_color: string | null
+          height_cm: number | null
+          hidden_instructions: string
           id: string
+          interests: string[]
+          is_featured: boolean
+          is_hidden: boolean
+          is_new: boolean
+          is_premium: boolean
+          language: string
+          memory_birthdays: boolean
+          memory_favorite_topics: boolean
+          memory_past_conversations: boolean
+          memory_preferences: boolean
+          memory_user_name: boolean
           name: string
+          nationality: string | null
           personality: string
+          profession: string | null
           slug: string
           status: Database["public"]["Enums"]["character_status"]
+          style_asks_questions: number
+          style_emoji_usage: number
+          style_formality: number
+          style_gif_usage: number
+          style_message_length: string
+          style_nickname_usage: number
+          style_typing_speed: number
+          system_prompt: string
           tagline: string | null
           tags: string[]
+          trait_caring: number
+          trait_confident: number
+          trait_curious: number
+          trait_dominant: number
+          trait_emotional: number
+          trait_flirty: number
+          trait_funny: number
+          trait_intelligent: number
+          trait_jealous: number
+          trait_playful: number
+          trait_romantic: number
+          trait_shy: number
           updated_at: string
         }
         Insert: {
+          age?: number | null
           avatar?: string | null
+          biography?: string
+          character_instructions?: string
+          clothing_style?: string | null
+          conversation_examples?: string
           created_at?: string
           description?: string
+          display_name?: string | null
+          eye_color?: string | null
+          forbidden_behaviors?: string
+          gender?: string | null
           greeting?: string | null
+          hair_color?: string | null
+          height_cm?: number | null
+          hidden_instructions?: string
           id?: string
+          interests?: string[]
+          is_featured?: boolean
+          is_hidden?: boolean
+          is_new?: boolean
+          is_premium?: boolean
+          language?: string
+          memory_birthdays?: boolean
+          memory_favorite_topics?: boolean
+          memory_past_conversations?: boolean
+          memory_preferences?: boolean
+          memory_user_name?: boolean
           name: string
+          nationality?: string | null
           personality?: string
+          profession?: string | null
           slug: string
           status?: Database["public"]["Enums"]["character_status"]
+          style_asks_questions?: number
+          style_emoji_usage?: number
+          style_formality?: number
+          style_gif_usage?: number
+          style_message_length?: string
+          style_nickname_usage?: number
+          style_typing_speed?: number
+          system_prompt?: string
           tagline?: string | null
           tags?: string[]
+          trait_caring?: number
+          trait_confident?: number
+          trait_curious?: number
+          trait_dominant?: number
+          trait_emotional?: number
+          trait_flirty?: number
+          trait_funny?: number
+          trait_intelligent?: number
+          trait_jealous?: number
+          trait_playful?: number
+          trait_romantic?: number
+          trait_shy?: number
           updated_at?: string
         }
         Update: {
+          age?: number | null
           avatar?: string | null
+          biography?: string
+          character_instructions?: string
+          clothing_style?: string | null
+          conversation_examples?: string
           created_at?: string
           description?: string
+          display_name?: string | null
+          eye_color?: string | null
+          forbidden_behaviors?: string
+          gender?: string | null
           greeting?: string | null
+          hair_color?: string | null
+          height_cm?: number | null
+          hidden_instructions?: string
           id?: string
+          interests?: string[]
+          is_featured?: boolean
+          is_hidden?: boolean
+          is_new?: boolean
+          is_premium?: boolean
+          language?: string
+          memory_birthdays?: boolean
+          memory_favorite_topics?: boolean
+          memory_past_conversations?: boolean
+          memory_preferences?: boolean
+          memory_user_name?: boolean
           name?: string
+          nationality?: string | null
           personality?: string
+          profession?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["character_status"]
+          style_asks_questions?: number
+          style_emoji_usage?: number
+          style_formality?: number
+          style_gif_usage?: number
+          style_message_length?: string
+          style_nickname_usage?: number
+          style_typing_speed?: number
+          system_prompt?: string
           tagline?: string | null
           tags?: string[]
+          trait_caring?: number
+          trait_confident?: number
+          trait_curious?: number
+          trait_dominant?: number
+          trait_emotional?: number
+          trait_flirty?: number
+          trait_funny?: number
+          trait_intelligent?: number
+          trait_jealous?: number
+          trait_playful?: number
+          trait_romantic?: number
+          trait_shy?: number
           updated_at?: string
         }
         Relationships: []
@@ -87,6 +222,13 @@ export type Database = {
             columns: ["character_id"]
             isOneToOne: false
             referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "public_characters"
             referencedColumns: ["id"]
           },
         ]
@@ -143,6 +285,13 @@ export type Database = {
             columns: ["character_id"]
             isOneToOne: false
             referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "public_characters"
             referencedColumns: ["id"]
           },
         ]
@@ -235,7 +384,93 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_characters: {
+        Row: {
+          age: number | null
+          avatar: string | null
+          biography: string | null
+          clothing_style: string | null
+          created_at: string | null
+          description: string | null
+          display_name: string | null
+          eye_color: string | null
+          gender: string | null
+          greeting: string | null
+          hair_color: string | null
+          height_cm: number | null
+          id: string | null
+          interests: string[] | null
+          is_featured: boolean | null
+          is_new: boolean | null
+          is_premium: boolean | null
+          language: string | null
+          name: string | null
+          nationality: string | null
+          personality: string | null
+          profession: string | null
+          slug: string | null
+          status: Database["public"]["Enums"]["character_status"] | null
+          tagline: string | null
+          tags: string[] | null
+        }
+        Insert: {
+          age?: number | null
+          avatar?: string | null
+          biography?: string | null
+          clothing_style?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string | null
+          eye_color?: string | null
+          gender?: string | null
+          greeting?: string | null
+          hair_color?: string | null
+          height_cm?: number | null
+          id?: string | null
+          interests?: string[] | null
+          is_featured?: boolean | null
+          is_new?: boolean | null
+          is_premium?: boolean | null
+          language?: string | null
+          name?: string | null
+          nationality?: string | null
+          personality?: string | null
+          profession?: string | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["character_status"] | null
+          tagline?: string | null
+          tags?: string[] | null
+        }
+        Update: {
+          age?: number | null
+          avatar?: string | null
+          biography?: string | null
+          clothing_style?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string | null
+          eye_color?: string | null
+          gender?: string | null
+          greeting?: string | null
+          hair_color?: string | null
+          height_cm?: number | null
+          id?: string | null
+          interests?: string[] | null
+          is_featured?: boolean | null
+          is_new?: boolean | null
+          is_premium?: boolean | null
+          language?: string | null
+          name?: string | null
+          nationality?: string | null
+          personality?: string | null
+          profession?: string | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["character_status"] | null
+          tagline?: string | null
+          tags?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
