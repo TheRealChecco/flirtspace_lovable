@@ -224,6 +224,13 @@ export type Database = {
             referencedRelation: "characters"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "conversations_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "public_characters"
+            referencedColumns: ["id"]
+          },
         ]
       }
       credit_transactions: {
@@ -278,6 +285,13 @@ export type Database = {
             columns: ["character_id"]
             isOneToOne: false
             referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "public_characters"
             referencedColumns: ["id"]
           },
         ]
@@ -370,7 +384,93 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_characters: {
+        Row: {
+          age: number | null
+          avatar: string | null
+          biography: string | null
+          clothing_style: string | null
+          created_at: string | null
+          description: string | null
+          display_name: string | null
+          eye_color: string | null
+          gender: string | null
+          greeting: string | null
+          hair_color: string | null
+          height_cm: number | null
+          id: string | null
+          interests: string[] | null
+          is_featured: boolean | null
+          is_new: boolean | null
+          is_premium: boolean | null
+          language: string | null
+          name: string | null
+          nationality: string | null
+          personality: string | null
+          profession: string | null
+          slug: string | null
+          status: Database["public"]["Enums"]["character_status"] | null
+          tagline: string | null
+          tags: string[] | null
+        }
+        Insert: {
+          age?: number | null
+          avatar?: string | null
+          biography?: string | null
+          clothing_style?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string | null
+          eye_color?: string | null
+          gender?: string | null
+          greeting?: string | null
+          hair_color?: string | null
+          height_cm?: number | null
+          id?: string | null
+          interests?: string[] | null
+          is_featured?: boolean | null
+          is_new?: boolean | null
+          is_premium?: boolean | null
+          language?: string | null
+          name?: string | null
+          nationality?: string | null
+          personality?: string | null
+          profession?: string | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["character_status"] | null
+          tagline?: string | null
+          tags?: string[] | null
+        }
+        Update: {
+          age?: number | null
+          avatar?: string | null
+          biography?: string | null
+          clothing_style?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string | null
+          eye_color?: string | null
+          gender?: string | null
+          greeting?: string | null
+          hair_color?: string | null
+          height_cm?: number | null
+          id?: string | null
+          interests?: string[] | null
+          is_featured?: boolean | null
+          is_new?: boolean | null
+          is_premium?: boolean | null
+          language?: string | null
+          name?: string | null
+          nationality?: string | null
+          personality?: string | null
+          profession?: string | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["character_status"] | null
+          tagline?: string | null
+          tags?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
