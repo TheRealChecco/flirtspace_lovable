@@ -10,7 +10,7 @@ import logo from "@/assets/flirtspace-logo.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
     redirect: typeof search["redirect"] === "string" ? search["redirect"] : undefined,
   }),
   beforeLoad: async ({ search }) => {
