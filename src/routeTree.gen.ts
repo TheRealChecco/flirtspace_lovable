@@ -14,8 +14,12 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ChatCharacterIdRouteImport } from './routes/chat.$characterId'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminCharactersIdRouteImport } from './routes/_authenticated/admin/characters/$id'
+import { Route as AuthenticatedAdminCharactersNewRouteImport } from './routes/_authenticated/admin/characters/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,6 +45,11 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -51,14 +60,35 @@ const ChatCharacterIdRoute = ChatCharacterIdRouteImport.update({
   path: '/chat/$characterId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminCharactersIdRoute =
+  AuthenticatedAdminCharactersIdRouteImport.update({
+    id: '/characters/$id',
+    path: '/characters/$id',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminCharactersNewRoute =
+  AuthenticatedAdminCharactersNewRouteImport.update({
+    id: '/characters/new',
+    path: '/characters/new',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/characters': typeof CharactersRoute
   '/pricing': typeof PricingRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/chat/$characterId': typeof ChatCharacterIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
+  '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +97,9 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/chat/$characterId': typeof ChatCharacterIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
+  '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -75,8 +108,12 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/characters': typeof CharactersRoute
   '/pricing': typeof PricingRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/chat/$characterId': typeof ChatCharacterIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
+  '/_authenticated/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -85,8 +122,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/characters'
     | '/pricing'
+    | '/admin'
     | '/dashboard'
     | '/chat/$characterId'
+    | '/admin/'
+    | '/admin/characters/$id'
+    | '/admin/characters/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -95,6 +136,9 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/dashboard'
     | '/chat/$characterId'
+    | '/admin'
+    | '/admin/characters/$id'
+    | '/admin/characters/new'
   id:
     | '__root__'
     | '/'
@@ -102,8 +146,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/characters'
     | '/pricing'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/chat/$characterId'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/characters/$id'
+    | '/_authenticated/admin/characters/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -152,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -166,14 +221,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatCharacterIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/characters/$id': {
+      id: '/_authenticated/admin/characters/$id'
+      path: '/characters/$id'
+      fullPath: '/admin/characters/$id'
+      preLoaderRoute: typeof AuthenticatedAdminCharactersIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/characters/new': {
+      id: '/_authenticated/admin/characters/new'
+      path: '/characters/new'
+      fullPath: '/admin/characters/new'
+      preLoaderRoute: typeof AuthenticatedAdminCharactersNewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminCharactersIdRoute: typeof AuthenticatedAdminCharactersIdRoute
+  AuthenticatedAdminCharactersNewRoute: typeof AuthenticatedAdminCharactersNewRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminCharactersIdRoute: AuthenticatedAdminCharactersIdRoute,
+  AuthenticatedAdminCharactersNewRoute: AuthenticatedAdminCharactersNewRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
 }
 
