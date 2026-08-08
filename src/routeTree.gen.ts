@@ -18,6 +18,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ChatCharacterIdRouteImport } from './routes/chat.$characterId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminCharactersIndexRouteImport } from './routes/_authenticated/admin/characters/index'
 import { Route as AuthenticatedAdminCharactersIdRouteImport } from './routes/_authenticated/admin/characters/$id'
 import { Route as AuthenticatedAdminCharactersNewRouteImport } from './routes/_authenticated/admin/characters/new'
 
@@ -65,6 +66,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminCharactersIndexRoute =
+  AuthenticatedAdminCharactersIndexRouteImport.update({
+    id: '/characters/',
+    path: '/characters/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminCharactersIdRoute =
   AuthenticatedAdminCharactersIdRouteImport.update({
     id: '/characters/$id',
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
+  '/admin/characters/': typeof AuthenticatedAdminCharactersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,6 +108,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
+  '/admin/characters': typeof AuthenticatedAdminCharactersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,6 +123,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/_authenticated/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
+  '/_authenticated/admin/characters/': typeof AuthenticatedAdminCharactersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/characters/$id'
     | '/admin/characters/new'
+    | '/admin/characters/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/characters/$id'
     | '/admin/characters/new'
+    | '/admin/characters'
   id:
     | '__root__'
     | '/'
@@ -152,6 +164,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/admin/characters/$id'
     | '/_authenticated/admin/characters/new'
+    | '/_authenticated/admin/characters/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/characters/': {
+      id: '/_authenticated/admin/characters/'
+      path: '/characters'
+      fullPath: '/admin/characters/'
+      preLoaderRoute: typeof AuthenticatedAdminCharactersIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/characters/$id': {
       id: '/_authenticated/admin/characters/$id'
       path: '/characters/$id'
@@ -249,12 +269,15 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminCharactersIdRoute: typeof AuthenticatedAdminCharactersIdRoute
   AuthenticatedAdminCharactersNewRoute: typeof AuthenticatedAdminCharactersNewRoute
+  AuthenticatedAdminCharactersIndexRoute: typeof AuthenticatedAdminCharactersIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminCharactersIdRoute: AuthenticatedAdminCharactersIdRoute,
   AuthenticatedAdminCharactersNewRoute: AuthenticatedAdminCharactersNewRoute,
+  AuthenticatedAdminCharactersIndexRoute:
+    AuthenticatedAdminCharactersIndexRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
