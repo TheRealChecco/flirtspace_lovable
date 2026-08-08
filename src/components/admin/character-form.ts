@@ -32,7 +32,7 @@ export type CharacterFormState = {
   memory_user_name: boolean;
   memory_past_conversations: boolean;
   memory_preferences: boolean;
-  memory_birthday: boolean;
+  memory_birthdays: boolean;
   memory_favorite_topics: boolean;
   system_prompt: string;
   character_instructions: string;
@@ -143,7 +143,7 @@ export function emptyForm(): CharacterFormState {
     memory_user_name: true,
     memory_past_conversations: true,
     memory_preferences: true,
-    memory_birthday: false,
+    memory_birthdays: false,
     memory_favorite_topics: true,
     system_prompt: "",
     character_instructions: "",
@@ -192,7 +192,7 @@ export function formFromRecord(r: CharacterRecord): CharacterFormState {
     memory_user_name: r.memory_user_name ?? true,
     memory_past_conversations: r.memory_past_conversations ?? true,
     memory_preferences: r.memory_preferences ?? true,
-    memory_birthday: r.memory_birthday ?? false,
+    memory_birthdays: r.memory_birthdays ?? false,
     memory_favorite_topics: r.memory_favorite_topics ?? true,
     system_prompt: str(r.system_prompt),
     character_instructions: str(r.character_instructions),
@@ -248,7 +248,7 @@ export function toPayload(s: CharacterFormState): CharacterInsert {
     memory_user_name: s.memory_user_name,
     memory_past_conversations: s.memory_past_conversations,
     memory_preferences: s.memory_preferences,
-    memory_birthday: s.memory_birthday,
+    memory_birthdays: s.memory_birthdays,
     memory_favorite_topics: s.memory_favorite_topics,
     system_prompt: s.system_prompt,
     character_instructions: s.character_instructions,
