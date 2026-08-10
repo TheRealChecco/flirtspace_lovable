@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/use-auth";
 import { listConversations, listFavorites, getProfile } from "@/lib/api";
-import { characters as staticCharacters } from "@/data/characters";
+import { CharacterAvatar } from "@/components/CharacterAvatar";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -37,10 +37,6 @@ const PLAN_LABEL: Record<string, string> = {
   vip: "VIP",
 };
 
-/** Immagini locali finché gli avatar non sono caricati sullo storage. */
-function imageForSlug(slug: string) {
-  return staticCharacters.find((c) => c.id === slug)?.image;
-}
 
 function formatWhen(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
