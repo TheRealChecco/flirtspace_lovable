@@ -16,8 +16,8 @@ import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as ChatCharacterIdRouteImport } from './routes/chat.$characterId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedChatCharacterIdRouteImport } from './routes/_authenticated/chat.$characterId'
 import { Route as AuthenticatedAdminCharactersIndexRouteImport } from './routes/_authenticated/admin/characters/index'
 import { Route as AuthenticatedAdminCharactersIdRouteImport } from './routes/_authenticated/admin/characters/$id'
 import { Route as AuthenticatedAdminCharactersNewRouteImport } from './routes/_authenticated/admin/characters/new'
@@ -56,16 +56,17 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ChatCharacterIdRoute = ChatCharacterIdRouteImport.update({
-  id: '/chat/$characterId',
-  path: '/chat/$characterId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedChatCharacterIdRoute =
+  AuthenticatedChatCharacterIdRouteImport.update({
+    id: '/chat/$characterId',
+    path: '/chat/$characterId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminCharactersIndexRoute =
   AuthenticatedAdminCharactersIndexRouteImport.update({
     id: '/characters/',
@@ -92,7 +93,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/chat/$characterId': typeof ChatCharacterIdRoute
+  '/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -104,7 +105,7 @@ export interface FileRoutesByTo {
   '/characters': typeof CharactersRoute
   '/pricing': typeof PricingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/chat/$characterId': typeof ChatCharacterIdRoute
+  '/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -119,7 +120,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/chat/$characterId': typeof ChatCharacterIdRoute
+  '/_authenticated/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/_authenticated/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -160,7 +161,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
-    | '/chat/$characterId'
+    | '/_authenticated/chat/$characterId'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/characters/$id'
     | '/_authenticated/admin/characters/new'
@@ -173,7 +174,6 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CharactersRoute: typeof CharactersRoute
   PricingRoute: typeof PricingRoute
-  ChatCharacterIdRoute: typeof ChatCharacterIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -227,19 +227,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/chat/$characterId': {
-      id: '/chat/$characterId'
-      path: '/chat/$characterId'
-      fullPath: '/chat/$characterId'
-      preLoaderRoute: typeof ChatCharacterIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/chat/$characterId': {
+      id: '/_authenticated/chat/$characterId'
+      path: '/chat/$characterId'
+      fullPath: '/chat/$characterId'
+      preLoaderRoute: typeof AuthenticatedChatCharacterIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/characters/': {
       id: '/_authenticated/admin/characters/'
@@ -286,11 +286,13 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedChatCharacterIdRoute: typeof AuthenticatedChatCharacterIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedChatCharacterIdRoute: AuthenticatedChatCharacterIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -302,7 +304,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CharactersRoute: CharactersRoute,
   PricingRoute: PricingRoute,
-  ChatCharacterIdRoute: ChatCharacterIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

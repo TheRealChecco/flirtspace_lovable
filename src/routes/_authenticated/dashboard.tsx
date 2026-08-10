@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/use-auth";
 import { listConversations, listFavorites, getProfile } from "@/lib/api";
-import { characters as staticCharacters } from "@/data/characters";
+import { CharacterAvatar } from "@/components/CharacterAvatar";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -37,10 +37,6 @@ const PLAN_LABEL: Record<string, string> = {
   vip: "VIP",
 };
 
-/** Immagini locali finché gli avatar non sono caricati sullo storage. */
-function imageForSlug(slug: string) {
-  return staticCharacters.find((c) => c.id === slug)?.image;
-}
 
 function formatWhen(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -159,13 +155,10 @@ function Dashboard() {
                         params={{ characterId: conv.character.slug ?? "" }}
                         className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 py-3.5 transition-opacity hover:opacity-80"
                       >
-                        <img
-                          src={conv.character.avatar ?? imageForSlug(conv.character.slug ?? "") ?? ""}
-                          alt={conv.character.name ?? "Personaggio"}
-                          loading="lazy"
-                          width={640}
-                          height={640}
-                          className="h-11 w-11 shrink-0 rounded-full object-cover"
+                        <CharacterAvatar
+                          src={conv.character.avatar}
+                          name={conv.character.name ?? "Personaggio"}
+                          className="h-11 w-11 shrink-0 rounded-full"
                         />
                         <div className="min-w-0">
                           <p className="truncate text-sm font-medium">{conv.character.name}</p>
@@ -201,13 +194,10 @@ function Dashboard() {
                       params={{ characterId: fav.character.slug ?? "" }}
                       className="group rounded-xl border border-border/60 p-3 text-center transition-colors hover:border-primary/50"
                     >
-                      <img
-                        src={fav.character.avatar ?? imageForSlug(fav.character.slug ?? "") ?? ""}
-                        alt={fav.character.name ?? "Personaggio"}
-                        loading="lazy"
-                        width={640}
-                        height={640}
-                        className="mx-auto h-14 w-14 rounded-full object-cover"
+                      <CharacterAvatar
+                        src={fav.character.avatar}
+                        name={fav.character.name ?? "Personaggio"}
+                        className="mx-auto h-14 w-14 rounded-full text-lg"
                       />
                       <p className="mt-2 truncate text-sm font-medium">{fav.character.name}</p>
                       <p className="truncate text-[11px] text-muted-foreground">
