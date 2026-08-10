@@ -3,7 +3,9 @@ import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyRoles } from "@/lib/api";
-import logo from "@/assets/flirtspace-logo.png";
+import logoAsset from "@/assets/flirtspace-logo.png.asset.json";
+
+const logo = logoAsset.url;
 
 /**
  * Sezione amministrazione: riservata agli utenti con ruolo admin.
