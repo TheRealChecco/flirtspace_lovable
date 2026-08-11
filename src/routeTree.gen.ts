@@ -18,6 +18,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedChatCharacterIdRouteImport } from './routes/_authenticated/chat.$characterId'
+import { Route as ApiPublicAiRepliesRouteImport } from './routes/api/public/ai-replies'
 import { Route as AuthenticatedAdminCharactersIndexRouteImport } from './routes/_authenticated/admin/characters/index'
 import { Route as AuthenticatedAdminCharactersIdRouteImport } from './routes/_authenticated/admin/characters/$id'
 import { Route as AuthenticatedAdminCharactersNewRouteImport } from './routes/_authenticated/admin/characters/new'
@@ -67,6 +68,11 @@ const AuthenticatedChatCharacterIdRoute =
     path: '/chat/$characterId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicAiRepliesRoute = ApiPublicAiRepliesRouteImport.update({
+  id: '/api/public/ai-replies',
+  path: '/api/public/ai-replies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminCharactersIndexRoute =
   AuthenticatedAdminCharactersIndexRouteImport.update({
     id: '/characters/',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
+  '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
+  '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
+  '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/_authenticated/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/chat/$characterId'
+    | '/api/public/ai-replies'
     | '/admin/'
     | '/admin/characters/$id'
     | '/admin/characters/new'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/dashboard'
     | '/chat/$characterId'
+    | '/api/public/ai-replies'
     | '/admin'
     | '/admin/characters/$id'
     | '/admin/characters/new'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/chat/$characterId'
+    | '/api/public/ai-replies'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/characters/$id'
     | '/_authenticated/admin/characters/new'
@@ -174,6 +186,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CharactersRoute: typeof CharactersRoute
   PricingRoute: typeof PricingRoute
+  ApiPublicAiRepliesRoute: typeof ApiPublicAiRepliesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -241,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatCharacterIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/ai-replies': {
+      id: '/api/public/ai-replies'
+      path: '/api/public/ai-replies'
+      fullPath: '/api/public/ai-replies'
+      preLoaderRoute: typeof ApiPublicAiRepliesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/characters/': {
       id: '/_authenticated/admin/characters/'
       path: '/characters'
@@ -304,6 +324,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CharactersRoute: CharactersRoute,
   PricingRoute: PricingRoute,
+  ApiPublicAiRepliesRoute: ApiPublicAiRepliesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
