@@ -10,6 +10,18 @@ import type { CharacterRecord } from "@/types/database";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/responses";
 const CHAT_MODEL = "openai/gpt-5.6-luna";
 
+/* --------------------------- Parametri configurabili -------------------------- */
+
+/** Quanti messaggi recenti entrano nel contesto del modello. */
+export const RECENT_MESSAGE_LIMIT = 20;
+/** Quante memorie a lungo termine vengono richiamate per ogni risposta. */
+export const MEMORY_LIMIT = 10;
+/** Ogni quanti nuovi messaggi il riepilogo viene aggiornato in modo incrementale. */
+export const SUMMARY_UPDATE_THRESHOLD = 20;
+/** Ritardo naturale della risposta (minuti), generato casualmente lato server. */
+export const REPLY_DELAY_MIN_MINUTES = 1;
+export const REPLY_DELAY_MAX_MINUTES = 20;
+
 export type ChatTurn = { role: "user" | "assistant"; text: string };
 
 export class AiGatewayError extends Error {
