@@ -103,7 +103,10 @@ export const retryReply = createServerFn({ method: "POST" })
     const conversation = await getOwnedConversation(context.supabase, data.conversationId);
     if (!conversation) throw new Error("Conversazione non trovata");
 
-    const { error } = await context.supabase
+    // L'aggiornamento dei messaggi è riservato al server (RLS: nessun update
+    // lato utente). L'appartenenza è già stata verificata sopra.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("messages")
       .update({
         status: "pending",
