@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import type { ChatTurn } from "@/lib/ai.server";
+import {
+  REPLY_DELAY_MAX_MINUTES,
+  REPLY_DELAY_MIN_MINUTES,
+  type ChatTurn,
+} from "@/lib/ai.server";
 import type {
   CharacterRecord,
   Conversation,
@@ -103,6 +107,7 @@ export async function listMessages(
         .from("messages")
         .select("*")
         .eq("conversation_id", conversationId)
+        .eq("status", "delivered")
         .order("timestamp"),
     );
   }
@@ -111,6 +116,7 @@ export async function listMessages(
       .from("messages")
       .select("*")
       .eq("conversation_id", conversationId)
+      .eq("status", "delivered")
       .order("timestamp", { ascending: false })
       .limit(limit),
   );
@@ -130,6 +136,54 @@ export async function insertChatMessage(
       .select("*")
       .single(),
   );
+}
+
+/**
+ * Programma la risposta del personaggio con un ritardo casuale lato server.
+ * La riga viene creata subito in stato `pending`: il job vive nel database,
+ * quindi chiudere o ricaricare il browser non annulla la risposta.
+ * L'indice unico su `reply_to_message_id` impedisce job duplicati.
+ */
+export async function scheduleReply(
+  client: UserClient,
+  conversationId: string,
+  userMessageId: string,
+): Promise<{ deliverAt: string } | null> {
+  const minutes =
+    REPLY_DELAY_MIN_MINUTES +
+    Math.random() * (REPLY_DELAY_MAX_MINUTES - REPLY_DELAY_MIN_MINUTES);
+  const deliverAt = new Date(Date.now() + minutes * 60_000).toISOString();
+
+  const { error } = await client.from("messages").insert({
+    conversation_id: conversationId,
+    sender: "character",
+    message: "",
+    status: "pending",
+    deliver_at: deliverAt,
+    reply_to_message_id: userMessageId,
+  });
+  // Violazione dell'indice unico: un job esiste già per questo messaggio.
+  if (error && error.code === "23505") return null;
+  if (error) throw new Error(error.message);
+  return { deliverAt };
+}
+
+/** Stato della risposta in arrivo (senza rivelare il ritardo esatto). */
+export async function getReplyState(
+  client: UserClient,
+  conversationId: string,
+): Promise<{ status: "pending" | "processing" | "failed"; error: string | null } | null> {
+  const { data, error } = await client
+    .from("messages")
+    .select("status, error")
+    .eq("conversation_id", conversationId)
+    .in("status", ["pending", "processing", "failed"])
+    .order("timestamp", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  return { status: data.status as "pending" | "processing" | "failed", error: data.error };
 }
 
 export async function touchConversation(client: UserClient, conversationId: string): Promise<void> {

@@ -10,6 +10,18 @@ import type { CharacterRecord } from "@/types/database";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/responses";
 const CHAT_MODEL = "openai/gpt-5.6-luna";
 
+/* --------------------------- Parametri configurabili -------------------------- */
+
+/** Quanti messaggi recenti entrano nel contesto del modello. */
+export const RECENT_MESSAGE_LIMIT = 20;
+/** Quante memorie a lungo termine vengono richiamate per ogni risposta. */
+export const MEMORY_LIMIT = 10;
+/** Ogni quanti nuovi messaggi il riepilogo viene aggiornato in modo incrementale. */
+export const SUMMARY_UPDATE_THRESHOLD = 20;
+/** Ritardo naturale della risposta (minuti), generato casualmente lato server. */
+export const REPLY_DELAY_MIN_MINUTES = 1;
+export const REPLY_DELAY_MAX_MINUTES = 20;
+
 export type ChatTurn = { role: "user" | "assistant"; text: string };
 
 export class AiGatewayError extends Error {
@@ -145,15 +157,8 @@ export function buildSystemPrompt(c: CharacterRecord): string {
 
 /* ----------------------------- Chiamata al modello ---------------------------- */
 
-/**
- * Genera la risposta del personaggio. La chiamata è in streaming (obbligatorio
- * per i modelli Responses) ma viene consumata lato server: al client arriva
- * solo il testo finale.
- */
-export async function generateCharacterReply(args: {
-  character: CharacterRecord;
-  history: ChatTurn[];
-}): Promise<string> {
+/** Chiamata generica al gateway (streaming consumato lato server). */
+async function callModel(instructions: string, input: ChatTurn[]): Promise<string> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new AiGatewayError("Configurazione AI mancante sul server", 500);
 
@@ -166,12 +171,10 @@ export async function generateCharacterReply(args: {
     },
     body: JSON.stringify({
       model: CHAT_MODEL,
-      instructions: buildSystemPrompt(args.character),
-      input: args.history.map((turn) => ({
+      instructions,
+      input: input.map((turn) => ({
         role: turn.role,
-        content: [
-          { type: turn.role === "user" ? "input_text" : "output_text", text: turn.text },
-        ],
+        content: [{ type: turn.role === "user" ? "input_text" : "output_text", text: turn.text }],
       })),
       stream: true,
     }),
@@ -184,6 +187,79 @@ export async function generateCharacterReply(args: {
 
   return readStreamedText(res.body);
 }
+
+/**
+ * Contesto IA completo:
+ * configurazione personaggio + memorie a lungo termine + riepilogo della
+ * conversazione + messaggi recenti. Tutta la logica resta lato server.
+ */
+export function buildAiContext(args: {
+  character: CharacterRecord;
+  memories: MemoryContext[];
+  summary: string | null;
+}): string {
+  const parts = [buildSystemPrompt(args.character)];
+
+  if (args.memories.length > 0) {
+    parts.push(
+      `# Cosa ricordi dell'utente (memoria a lungo termine)\n${args.memories
+        .map((m) => `- [${m.category}] ${m.memory}`)
+        .join(
+          "\n",
+        )}\nUsa queste informazioni con naturalezza, senza elencarle e senza dire che le hai "salvate".`,
+    );
+  }
+
+  const summary = args.summary?.trim();
+  if (summary) {
+    parts.push(
+      `# Riepilogo delle conversazioni precedenti\n${summary}\nQuesto riepilogo sostituisce i messaggi più vecchi: consideralo parte della tua memoria.`,
+    );
+  }
+
+  return parts.join("\n\n");
+}
+
+export type MemoryContext = { memory: string; category: string };
+
+/**
+ * Genera la risposta del personaggio a partire dal contesto multilivello.
+ * `history` contiene solo i messaggi recenti (vedi RECENT_MESSAGE_LIMIT).
+ */
+export async function generateCharacterReply(args: {
+  character: CharacterRecord;
+  history: ChatTurn[];
+  memories?: MemoryContext[];
+  summary?: string | null;
+}): Promise<string> {
+  const instructions = buildAiContext({
+    character: args.character,
+    memories: args.memories ?? [],
+    summary: args.summary ?? null,
+  });
+  return callModel(instructions, args.history);
+}
+
+/** Chiamata "di servizio" che si aspetta JSON puro (memorie, riepiloghi). */
+export async function generateJson<T>(instructions: string, prompt: string): Promise<T | null> {
+  const raw = await callModel(
+    `${instructions}\n\nRispondi ESCLUSIVAMENTE con JSON valido, senza testo aggiuntivo e senza blocchi di codice.`,
+    [{ role: "user", text: prompt }],
+  );
+  const cleaned = raw
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/, "")
+    .trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start < 0 || end <= start) return null;
+  try {
+    return JSON.parse(cleaned.slice(start, end + 1)) as T;
+  } catch {
+    return null;
+  }
+}
+
 
 /** Legge lo stream SSE del gateway e accumula il testo della risposta. */
 async function readStreamedText(body: ReadableStream<Uint8Array>): Promise<string> {

@@ -1,26 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { AiGatewayError, generateCharacterReply } from "@/lib/ai.server";
 import {
   ensureGreeting,
   findPublicCharacter,
   getOrCreateConversation,
   getOwnedConversation,
-  HISTORY_LIMIT,
+  getReplyState,
   insertChatMessage,
   listMessages,
-  loadFullCharacter,
-  toChatTurns,
+  scheduleReply,
   touchConversation,
 } from "@/lib/chat.server";
-
-/** Messaggio di errore comprensibile per l'utente finale. */
-function friendlyAiError(status: number): string {
-  if (status === 429) return "Troppe richieste in questo momento: riprova fra qualche secondo.";
-  if (status === 402) return "Il servizio AI ha esaurito i crediti disponibili. Riprova più tardi.";
-  return "Il servizio AI non è disponibile in questo momento. Riprova fra poco.";
-}
 
 /**
  * Stato iniziale della chat: personaggio pubblico, conversazione dell'utente
@@ -39,14 +30,43 @@ export const getChatState = createServerFn({ method: "GET" })
       character.id,
     );
     await ensureGreeting(context.supabase, conversation.id, character.greeting);
-    const messages = await listMessages(context.supabase, conversation.id);
+    const [messages, replyState] = await Promise.all([
+      listMessages(context.supabase, conversation.id),
+      getReplyState(context.supabase, conversation.id),
+    ]);
 
-    return { character, conversationId: conversation.id, messages };
+    return { character, conversationId: conversation.id, messages, replyState };
   });
 
 /**
- * Invia un messaggio: salva il testo dell'utente, costruisce il contesto dal
- * personaggio nel database, chiama il modello lato server e salva la risposta.
+ * Polling leggero: messaggi consegnati + stato della risposta in arrivo.
+ * Ne approfitta per dare una spinta ai job scaduti (lo scheduler del
+ * database resta comunque la fonte principale, anche a browser chiuso).
+ */
+export const pollChat = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ conversationId: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    const conversation = await getOwnedConversation(context.supabase, data.conversationId);
+    if (!conversation) throw new Error("Conversazione non trovata");
+
+    const [messages, replyState] = await Promise.all([
+      listMessages(context.supabase, conversation.id),
+      getReplyState(context.supabase, conversation.id),
+    ]);
+
+    if (replyState?.status === "pending") {
+      const { runDueReplyJobs } = await import("@/lib/jobs.server");
+      void runDueReplyJobs().catch((err) => console.error("[chat] job kick", err));
+    }
+
+    return { messages, replyState };
+  });
+
+/**
+ * Invia un messaggio: salva subito il testo dell'utente e pianifica la
+ * risposta del personaggio con un ritardo naturale generato lato server.
+ * La generazione avviene poi nel worker: nessun timer nel browser.
  */
 export const sendChatMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -61,7 +81,6 @@ export const sendChatMessage = createServerFn({ method: "POST" })
     const conversation = await getOwnedConversation(context.supabase, data.conversationId);
     if (!conversation) throw new Error("Conversazione non trovata");
 
-    // 1. Salva subito il messaggio dell'utente (resta anche se l'AI fallisce).
     const userMessage = await insertChatMessage(
       context.supabase,
       conversation.id,
@@ -69,30 +88,34 @@ export const sendChatMessage = createServerFn({ method: "POST" })
       data.text,
     );
 
-    // 2. Carica il personaggio completo (prompt inclusi) solo lato server.
-    const character = await loadFullCharacter(conversation.character_id);
-    if (!character) throw new Error("Personaggio non trovato");
-
-    // 3. Storico recente, incluso il messaggio appena salvato.
-    const history = await listMessages(context.supabase, conversation.id, HISTORY_LIMIT);
-
-    // 4. Genera la risposta.
-    let reply: string;
-    try {
-      reply = await generateCharacterReply({ character, history: toChatTurns(history) });
-    } catch (error) {
-      await touchConversation(context.supabase, conversation.id);
-      if (error instanceof AiGatewayError) {
-        console.error("[chat] AI gateway error", error.status, error.message);
-        throw new Error(friendlyAiError(error.status));
-      }
-      console.error("[chat] unexpected error", error);
-      throw new Error("Si è verificato un errore imprevisto. Riprova fra poco.");
-    }
-
-    // 5. Salva e restituisci la risposta del personaggio.
-    const aiMessage = await insertChatMessage(context.supabase, conversation.id, "character", reply);
+    // Un solo job per messaggio utente: l'indice unico evita duplicati.
+    await scheduleReply(context.supabase, conversation.id, userMessage.id);
     await touchConversation(context.supabase, conversation.id);
 
-    return { userMessage, aiMessage };
+    return { userMessage, replyState: { status: "pending" as const, error: null } };
+  });
+
+/** Riprova una risposta non riuscita, ripianificandola a breve. */
+export const retryReply = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ conversationId: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    const conversation = await getOwnedConversation(context.supabase, data.conversationId);
+    if (!conversation) throw new Error("Conversazione non trovata");
+
+    // L'aggiornamento dei messaggi è riservato al server (RLS: nessun update
+    // lato utente). L'appartenenza è già stata verificata sopra.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("messages")
+      .update({
+        status: "pending",
+        error: null,
+        deliver_at: new Date(Date.now() + 5_000).toISOString(),
+      })
+      .eq("conversation_id", conversation.id)
+      .eq("status", "failed");
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
   });

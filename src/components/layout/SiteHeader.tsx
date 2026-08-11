@@ -94,7 +94,7 @@ export function SiteHeader() {
                 <Link to="/auth">Accedi</Link>
               </Button>
               <Button variant="hero" size="sm" asChild>
-                <Link to="/auth">
+                <Link to="/auth" search={{ mode: "signup" }}>
                   <Sparkles className="h-4 w-4" /> Inizia gratis
                 </Link>
               </Button>
@@ -142,7 +142,7 @@ export function SiteHeader() {
             ) : (
               <>
                 <Button variant="hero" size="lg" className="mt-3" asChild>
-                  <Link to="/auth" onClick={() => setOpen(false)}>
+                  <Link to="/auth" search={{ mode: "signup" }} onClick={() => setOpen(false)}>
                     <Sparkles className="h-4 w-4" /> Inizia gratis
                   </Link>
                 </Button>

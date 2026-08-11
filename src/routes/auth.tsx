@@ -10,8 +10,11 @@ import logo from "@/assets/flirtspace-logo.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
-  validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { redirect?: string | undefined; mode?: "signup" | undefined } => ({
     redirect: typeof search["redirect"] === "string" ? search["redirect"] : undefined,
+    mode: search["mode"] === "signup" ? "signup" : undefined,
   }),
   beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
@@ -53,12 +56,12 @@ function safePath(value: string | undefined): string {
 type Mode = "signin" | "signup";
 
 function AuthPage() {
-  const { redirect: redirectTo } = Route.useSearch();
+  const { redirect: redirectTo, mode: initialMode } = Route.useSearch();
   const { signIn, signUp, resetPassword } = useAuth();
   const navigate = useNavigate();
   const router = useRouter();
 
-  const [mode, setMode] = useState<Mode>("signin");
+  const [mode, setMode] = useState<Mode>(initialMode === "signup" ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
