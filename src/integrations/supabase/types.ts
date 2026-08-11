@@ -194,6 +194,41 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_summaries: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          message_count: number
+          summarized_until: string | null
+          summary: string
+          updated_at: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          message_count?: number
+          summarized_until?: string | null
+          summary?: string
+          updated_at?: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          message_count?: number
+          summarized_until?: string | null
+          summary?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_summaries_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: true
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           character_id: string
@@ -299,23 +334,35 @@ export type Database = {
       messages: {
         Row: {
           conversation_id: string
+          deliver_at: string | null
+          error: string | null
           id: string
           message: string
+          reply_to_message_id: string | null
           sender: Database["public"]["Enums"]["message_sender"]
+          status: Database["public"]["Enums"]["message_status"]
           timestamp: string
         }
         Insert: {
           conversation_id: string
+          deliver_at?: string | null
+          error?: string | null
           id?: string
           message: string
+          reply_to_message_id?: string | null
           sender: Database["public"]["Enums"]["message_sender"]
+          status?: Database["public"]["Enums"]["message_status"]
           timestamp?: string
         }
         Update: {
           conversation_id?: string
+          deliver_at?: string | null
+          error?: string | null
           id?: string
           message?: string
+          reply_to_message_id?: string | null
           sender?: Database["public"]["Enums"]["message_sender"]
+          status?: Database["public"]["Enums"]["message_status"]
           timestamp?: string
         }
         Relationships: [
@@ -324,6 +371,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_message_id_fkey"
+            columns: ["reply_to_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
         ]
@@ -360,6 +414,57 @@ export type Database = {
           username?: string
         }
         Relationships: []
+      }
+      user_memories: {
+        Row: {
+          category: string
+          character_id: string
+          created_at: string
+          id: string
+          importance: number
+          last_used_at: string
+          memory: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          character_id: string
+          created_at?: string
+          id?: string
+          importance?: number
+          last_used_at?: string
+          memory: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          character_id?: string
+          created_at?: string
+          id?: string
+          importance?: number
+          last_used_at?: string
+          memory?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_memories_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_memories_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "public_characters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -486,6 +591,7 @@ export type Database = {
       character_status: "active" | "draft" | "archived"
       credit_transaction_type: "purchase" | "spend" | "bonus" | "refund"
       message_sender: "user" | "character"
+      message_status: "pending" | "processing" | "delivered" | "failed"
       subscription_tier: "free" | "starter" | "premium" | "vip"
     }
     CompositeTypes: {
@@ -618,6 +724,7 @@ export const Constants = {
       character_status: ["active", "draft", "archived"],
       credit_transaction_type: ["purchase", "spend", "bonus", "refund"],
       message_sender: ["user", "character"],
+      message_status: ["pending", "processing", "delivered", "failed"],
       subscription_tier: ["free", "starter", "premium", "vip"],
     },
   },
