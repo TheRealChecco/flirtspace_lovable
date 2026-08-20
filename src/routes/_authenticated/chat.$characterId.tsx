@@ -169,25 +169,29 @@ function ChatPage() {
   }
 
   if (chatQuery.isError || !character) {
-    return (
-      <div className="flex h-dvh flex-col bg-background">
-        <SiteHeader />
-        <div className="grid flex-1 place-items-center px-6">
-          <div className="surface-card max-w-sm rounded-3xl p-8 text-center">
-            <TriangleAlert className="mx-auto h-7 w-7 text-primary" />
-            <h1 className="mt-4 font-display text-lg font-semibold">Chat non disponibile</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Il personaggio non esiste o non è più attivo. Esplora gli altri compagni IA.
-            </p>
-            <Button variant="hero" className="mt-6" asChild>
-              <Link to="/characters">Esplora i personaggi</Link>
-            </Button>
-          </div>
+  return (
+    <div className="flex h-dvh flex-col bg-background">
+      <SiteHeader />
+      <div className="grid flex-1 place-items-center px-6">
+        <div className="surface-card max-w-sm rounded-3xl p-8 text-center">
+          <TriangleAlert className="mx-auto h-7 w-7 text-primary" />
+          <h1 className="mt-4 font-display text-lg font-semibold">Chat non disponibile</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Il personaggio non esiste o non è più attivo. Esplora gli altri compagni IA.
+          </p>
+
+          <p className="mt-2 text-xs text-red-400 break-all">
+            {chatQuery.error?.message ?? "Personaggio non trovato"}
+          </p>
+
+          <Button variant="hero" className="mt-6" asChild>
+            <Link to="/characters">Esplora i personaggi</Link>
+          </Button>
         </div>
       </div>
-    );
-  }
-
+    </div>
+  );
+}
   const lastUserId = [...messages].reverse().find((m) => m.sender === "user")?.id;
 
   return (

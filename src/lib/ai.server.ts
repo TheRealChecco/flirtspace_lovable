@@ -7,8 +7,7 @@ import type { CharacterRecord } from "@/types/database";
  * server (`LOVABLE_API_KEY`) e non viene mai esposta al client.
  * Per cambiare modello in futuro basta modificare `CHAT_MODEL` qui.
  */
-const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/responses";
-const CHAT_MODEL = "openai/gpt-5.6-luna";
+const CHAT_MODEL = "gpt-5-mini";
 
 /* --------------------------- Parametri configurabili -------------------------- */
 
@@ -158,34 +157,63 @@ export function buildSystemPrompt(c: CharacterRecord): string {
 /* ----------------------------- Chiamata al modello ---------------------------- */
 
 /** Chiamata generica al gateway (streaming consumato lato server). */
-async function callModel(instructions: string, input: ChatTurn[]): Promise<string> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new AiGatewayError("Configurazione AI mancante sul server", 500);
+async function callModel(
+  instructions: string,
+  input: ChatTurn[],
+): Promise<string> {
+  const apiKey = process.env["OPENAI_API_KEY"];
 
-  const res = await fetch(GATEWAY_URL, {
+  if (!apiKey) {
+    throw new AiGatewayError(
+      "Configurazione OpenAI mancante sul server",
+      500,
+    );
+  }
+
+  const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Lovable-API-Key": apiKey,
-      "X-Lovable-AIG-SDK": "fetch",
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: CHAT_MODEL,
       instructions,
       input: input.map((turn) => ({
         role: turn.role,
-        content: [{ type: turn.role === "user" ? "input_text" : "output_text", text: turn.text }],
+        content: [
+          {
+            type: turn.role === "user" ? "input_text" : "output_text",
+            text: turn.text,
+          },
+        ],
       })),
-      stream: true,
     }),
   });
 
-  if (!res.ok || !res.body) {
-    const detail = await res.text().catch(() => "");
-    throw new AiGatewayError(detail.slice(0, 300) || `Errore HTTP ${res.status}`, res.status);
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+
+    throw new AiGatewayError(
+      detail.slice(0, 300) || `Errore HTTP ${response.status}`,
+      response.status,
+    );
   }
 
-  return readStreamedText(res.body);
+  const data = (await response.json()) as {
+    output_text?: string;
+  };
+
+  const reply = data.output_text?.trim();
+
+  if (!reply) {
+    throw new AiGatewayError(
+      "OpenAI ha restituito una risposta vuota",
+      502,
+    );
+  }
+
+  return reply;
 }
 
 /**
