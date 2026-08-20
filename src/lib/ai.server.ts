@@ -7,8 +7,7 @@ import type { CharacterRecord } from "@/types/database";
  * server (`LOVABLE_API_KEY`) e non viene mai esposta al client.
  * Per cambiare modello in futuro basta modificare `CHAT_MODEL` qui.
  */
-const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/responses";
-const CHAT_MODEL = "openai/gpt-5.6-luna";
+const CHAT_MODEL = "gpt-5-mini";
 
 /* --------------------------- Parametri configurabili -------------------------- */
 
