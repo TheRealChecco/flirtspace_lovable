@@ -3,20 +3,21 @@ import react from "@vitejs/plugin-react";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  build: {
+    cssMinify: "esbuild",
+  },
   plugins: [
     cloudflare({
       viteEnvironment: {
         name: "ssr",
       },
     }),
-    tanstackStart({
-      server: {
-        entry: "server",
-      },
-    }),
+    tanstackStart(),
     react(),
     tsConfigPaths(),
+    tailwindcss(),
   ],
 });
