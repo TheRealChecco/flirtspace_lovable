@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "flirtspace",
+  "name": "flirtspace-42169ee32",
   "compatibility_date": "2026-08-20",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry"
+  "main": "@tanstack/react-start/server-entry",
+  "keep_vars": true
 }
