@@ -4,13 +4,23 @@
   "startCommand": "docker compose -f docker-compose.base44.yml up -d",
   "secrets": [
     {
-      "name": "OPENAI_API_KEY",
-      "description": "OpenAI API key for server-side chat replies (src/lib/ai.server.ts). Optional at boot; required for the chat feature.",
-      "requiredAtBoot": false
+      "name": "SUPABASE_URL",
+      "description": "Supabase project URL (https://<project>.supabase.co). Required at boot — the client/server Supabase clients throw without it.",
+      "requiredAtBoot": true
+    },
+    {
+      "name": "SUPABASE_PUBLISHABLE_KEY",
+      "description": "Supabase publishable (anon) key. Required at boot — used by the browser client and the SSR auth middleware.",
+      "requiredAtBoot": true
     },
     {
       "name": "SUPABASE_SERVICE_ROLE_KEY",
-      "description": "Supabase service_role key for server-side admin ops (src/integrations/supabase/client.server.ts). Optional at boot; required for admin/character management.",
+      "description": "Supabase service_role key for server-side admin ops (src/integrations/supabase/client.server.ts): full character load, retry replies. Optional at boot; required for admin/character management.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "description": "OpenAI API key for server-side chat replies (src/lib/ai.server.ts). Optional at boot; required for the chat AI feature.",
       "requiredAtBoot": false
     }
   ]

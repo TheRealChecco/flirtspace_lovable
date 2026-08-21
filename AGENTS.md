@@ -39,6 +39,43 @@ enough to boot and render the landing/characters/pricing pages. Both secrets are
 delivered via `/run/base44/app.env` (last `env_file:` entry, always wins over the
 placeholders in `.env.base44-defaults`).
 
+### workerd TLS — ca-certificates required
+The SSR runs in **workerd** (Cloudflare runtime via `@cloudflare/vite-plugin`).
+`node:22-slim` ships **no system CA bundle**, and workerd verifies outbound TLS
+against the OS store (unlike Node, which bundles its own CAs). Without
+`ca-certificates`, every server-side HTTPS call (Supabase `getClaims()`, REST
+queries, OpenAI) fails with `unable to get local issuer certificate`, which
+surfaced as "Cannot read properties of null (reading 'claims')" in the chat.
+`Dockerfile.base44` installs `ca-certificates` to fix this. Do not drop it.
+
+### Auth / profiles (works)
+Signup calls `supabase.auth.signUp({ options: { data: { username } } })`. The DB
+trigger `on_auth_user_created → public.handle_new_user()` (SECURITY DEFINER)
+creates the `profiles` row (id = auth user id), a `user_roles` row (role `user`)
+and a `credit_transactions` row (50 welcome credits) — all on `auth.users`
+INSERT, regardless of email confirmation. Verified end-to-end: signup → profile
+created → confirm email → login → read own profile / create conversation / send
+message all pass RLS. **Email confirmation is enabled** in this Supabase
+project, so a new user cannot log in until they confirm (dashboard →
+Authentication → Providers → Email → "Confirm email" to disable for dev). The
+profile is created either way. If "profiles not saved" is reported again, the
+cause is almost always that the migrations were not applied to the connected
+project — re-run `supabase/migrations/*.sql` in the SQL editor.
+
+### Logo
+The logo is the local `public/favicon.png` (64×64), referenced as `/favicon.png`
+in SiteHeader, SiteFooter, auth and admin. The old Lovable R2 asset
+(`src/assets/flirtspace-logo.png.asset.json`, served from `/__l5e/...`) was
+removed — it was a runtime dependency on Lovable's CDN and 404'd outside Lovable.
+
+### Cron AI replies (portable)
+`private.dispatch_ai_replies()` (scheduled via `pg_cron` every minute) reads its
+target URL from `private.app_config.ai_replies_endpoint` (migration
+`20260822020000_...`). Set that to the deployed app URL (e.g. the Cloudflare
+Workers URL) when going to production; if empty the cron no-ops and replies are
+still delivered by client-side polling while a chat is open. The old migration
+hardcoded a Lovable preview URL — do not restore it.
+
 ### Verify
 `curl -sf http://localhost:3000/` returns the SSR HTML (Italian, FlirtSpace
 landing). The external-host check also passes: `curl -sf -H "Host:

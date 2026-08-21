@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/flirtspace-logo.png.asset.json";
 
 const groups = [
   {
@@ -35,7 +34,7 @@ export function SiteFooter() {
         <div>
           <div className="flex items-center gap-2">
             <img
-              src={logo.url}
+              src="/favicon.png"
               alt="Logo FlirtSpace"
               width={512}
               height={512}

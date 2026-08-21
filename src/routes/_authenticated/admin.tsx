@@ -3,9 +3,6 @@ import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyRoles } from "@/lib/api";
-import logoAsset from "@/assets/flirtspace-logo.png.asset.json";
-
-const logo = logoAsset.url;
 
 /**
  * Sezione amministrazione: riservata agli utenti con ruolo admin.
@@ -32,7 +29,7 @@ function AdminLayout() {
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-5">
           <div className="flex min-w-0 items-center gap-3">
             <Link to="/" className="flex items-center gap-2">
-              <img src={logo} alt="FlirtSpace" className="h-7 w-7 rounded-md" />
+              <img src="/favicon.png" alt="FlirtSpace" className="h-7 w-7 rounded-md" />
               <span className="font-display text-sm font-semibold">
                 FlirtSpace <span className="text-gradient">Admin</span>
               </span>

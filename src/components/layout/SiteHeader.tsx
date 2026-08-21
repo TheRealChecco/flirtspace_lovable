@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Menu, Sparkles, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/flirtspace-logo.png.asset.json";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -52,7 +51,7 @@ export function SiteHeader() {
       >
         <Link to="/" className="group flex min-w-0 items-center gap-2.5">
           <img
-            src={logo.url}
+            src="/favicon.png"
             alt="Logo FlirtSpace"
             width={512}
             height={512}
