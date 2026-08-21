@@ -1,0 +1,17 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "OPENAI_API_KEY",
+      "description": "OpenAI API key for server-side chat replies (src/lib/ai.server.ts). Optional at boot; required for the chat feature.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "description": "Supabase service_role key for server-side admin ops (src/integrations/supabase/client.server.ts). Optional at boot; required for admin/character management.",
+      "requiredAtBoot": false
+    }
+  ]
+}
