@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "flirtspace-42169ee32",,
+  "name": "flirtspace-42169ee3",
   "compatibility_date": "2026-08-20",
   "compatibility_flags": ["nodejs_compat"],
   "main": "./dist/server/index.mjs"
