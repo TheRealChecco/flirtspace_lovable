@@ -4,7 +4,10 @@ services:
     # destroy() on Pool (https://github.com/oven-sh/bun/issues/39247), which breaks
     # the miniflare runtime used by @cloudflare/vite-plugin. Node ships a working
     # undici, so the Cloudflare/TanStack Start dev server boots cleanly.
-    image: node:22-slim
+    build:
+      context: .
+      dockerfile: Dockerfile.base44
+    image: node22-base44:latest
     working_dir: /app
     volumes:
       - ./:/app
