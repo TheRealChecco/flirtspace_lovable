@@ -9,6 +9,10 @@ export default defineConfig({
   build: {
     cssMinify: "esbuild",
   },
+  server: {
+    host: true,
+    allowedHosts: true,
+  },
   plugins: [
     cloudflare({
       viteEnvironment: {
