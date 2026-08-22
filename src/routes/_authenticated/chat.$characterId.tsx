@@ -115,8 +115,9 @@ function ChatPage() {
   const mutation = useMutation({
     mutationFn: (vars: { conversationId: string; text: string; tempId: string }) =>
       sendMessage({ data: { conversationId: vars.conversationId, text: vars.text } }),
-    onSuccess: ({ userMessage, replyState: next }, vars) => {
+    onSuccess: ({ userMessage, replyMessage, replyState: next }, vars) => {
       setMessages((prev) => [...prev.filter((m) => m.id !== vars.tempId), toUi(userMessage)]);
+      if (replyMessage) setMessages((prev) => [...prev, toUi(replyMessage)]);
       setReplyState(next);
     },
     onError: (error, vars) => {

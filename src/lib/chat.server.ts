@@ -1,10 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import {
-  REPLY_DELAY_MAX_MINUTES,
-  REPLY_DELAY_MIN_MINUTES,
-  type ChatTurn,
-} from "@/lib/ai.server";
+import { type ChatTurn } from "@/lib/ai.server";
 import type {
   CharacterRecord,
   Conversation,
@@ -149,10 +145,11 @@ export async function scheduleReply(
   conversationId: string,
   userMessageId: string,
 ): Promise<{ deliverAt: string } | null> {
-  const minutes =
-    REPLY_DELAY_MIN_MINUTES +
-    Math.random() * (REPLY_DELAY_MAX_MINUTES - REPLY_DELAY_MIN_MINUTES);
-  const deliverAt = new Date(Date.now() + minutes * 60_000).toISOString();
+  // Ritardo naturale disattivato: la risposta viene generata immediatamente.
+  // Per riattivarlo in futuro: deliverAt = now + (REPLY_DELAY_MIN_MINUTES +
+  // Math.random()*(MAX-MIN)) minuti, e affidarsi al polling/cron invece che
+  // alla chiamata diretta a runDueReplyJobs in sendChatMessage.
+  const deliverAt = new Date().toISOString();
 
   const { error } = await client.from("messages").insert({
     conversation_id: conversationId,

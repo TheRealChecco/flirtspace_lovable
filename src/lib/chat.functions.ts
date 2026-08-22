@@ -92,7 +92,29 @@ export const sendChatMessage = createServerFn({ method: "POST" })
     await scheduleReply(context.supabase, conversation.id, userMessage.id);
     await touchConversation(context.supabase, conversation.id);
 
-    return { userMessage, replyState: { status: "pending" as const, error: null } };
+    // Risposta immediata: elabora subito il job appena creato (ritardo disattivato).
+    const { runDueReplyJobs } = await import("@/lib/jobs.server");
+    await runDueReplyJobs();
+
+    // Recupera la risposta generata per mostrarla subito al client.
+    const { data: replyMsg, error: replyErr } = await context.supabase
+      .from("messages")
+      .select("*")
+      .eq("reply_to_message_id", userMessage.id)
+      .maybeSingle();
+    if (replyErr) throw new Error(replyErr.message);
+
+    const replyState = !replyMsg
+      ? ({ status: "pending" as const, error: null })
+      : replyMsg.status === "delivered"
+        ? null
+        : ({ status: replyMsg.status as "pending" | "processing" | "failed", error: replyMsg.error });
+
+    return {
+      userMessage,
+      replyMessage: replyMsg?.status === "delivered" ? replyMsg : null,
+      replyState,
+    };
   });
 
 /** Riprova una risposta non riuscita, ripianificandola a breve. */

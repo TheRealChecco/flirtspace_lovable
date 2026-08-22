@@ -3,9 +3,8 @@ import type { CharacterRecord } from "@/types/database";
 /**
  * Servizio AI lato server (mai importato dal browser).
  *
- * Tutte le chiamate passano dal gateway AI di Lovable: la chiave vive solo sul
- * server (`LOVABLE_API_KEY`) e non viene mai esposta al client.
- * Per cambiare modello in futuro basta modificare `CHAT_MODEL` qui.
+ * La chiave OpenAI vive solo sul server (`OPENAI_API_KEY`) e non viene mai
+ * esposta al client. Per cambiare modello in futuro basta modificare `CHAT_MODEL` qui.
  */
 const CHAT_MODEL = "gpt-5-mini";
 

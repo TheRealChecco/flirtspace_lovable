@@ -76,6 +76,20 @@ Workers URL) when going to production; if empty the cron no-ops and replies are
 still delivered by client-side polling while a chat is open. The old migration
 hardcoded a Lovable preview URL — do not restore it.
 
+### Chat (risposta immediata)
+The reply used to be scheduled 1-20 min in the future (`REPLY_DELAY_*_MINUTES`
+in `ai.server.ts`) and only processed by `runDueReplyJobs` once `deliver_at`
+passed, so the UI sat on "Sta preparando una risposta…" for minutes (the
+"second message stuck" bug). Now `scheduleReply` sets `deliver_at = now`,
+`sendChatMessage` calls `runDueReplyJobs` immediately and returns the generated
+reply (`replyMessage`) to the client, so the response appears as soon as the
+mutation resolves. The delay constants and the job/claim/cron architecture are
+kept for future re-enablement. **OpenAI credits**: the configured
+`OPENAI_API_KEY` currently returns 429 "no credits remaining" — replies cannot
+be generated until credits are added to the OpenAI account. With credits
+exhausted the reply is marked `failed` immediately (no hang) and the retry
+banner shows.
+
 ### Verify
 `curl -sf http://localhost:3000/` returns the SSR HTML (Italian, FlirtSpace
 landing). The external-host check also passes: `curl -sf -H "Host:
