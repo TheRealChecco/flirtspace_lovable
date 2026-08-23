@@ -21,4 +21,15 @@ npm install --no-audit --no-fund
   echo "SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY"
 } > /app/.dev.vars
 
+# .env.local (gitignored) — aligns the BROWSER bundle (VITE_ vars) with the
+# real Supabase project delivered as platform secrets. The committed .env
+# points at a different (template) project; without this override the client
+# and the server-side admin would use different projects and auth would fail.
+PROJ=$(echo "$SUPABASE_URL" | sed 's|https://||; s|\.supabase\.co.*||')
+{
+  echo "VITE_SUPABASE_URL=$SUPABASE_URL"
+  echo "VITE_SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY"
+  echo "VITE_SUPABASE_PROJECT_ID=$PROJ"
+} > /app/.env.local
+
 exec node node_modules/.bin/vite dev --host 0.0.0.0 --port 3000

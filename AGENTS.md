@@ -94,3 +94,16 @@ platform-delivered OS env (`GROQ_API_KEY`, `SUPABASE_*`) into `.dev.vars` before
 starting Vite. Production is unchanged: secrets are set as Cloudflare secrets.
 Verify the SSR sees a key via `POST /api/public/ai-replies` with a fake
 `x-cron-secret` — `401 Unauthorized` means the env reached the worker.
+
+### Supabase project alignment (browser vs server)
+
+The committed `.env` points `VITE_SUPABASE_URL` at a **template** Supabase
+project, while the platform secrets (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
+`SUPABASE_PUBLISHABLE_KEY`) point at the user's **real** project. The service
+role key only works for the real project, so the browser MUST use it too —
+otherwise `requireSupabaseAuth`'s `getClaims()` validates a session from one
+project against another and returns `null` ("Cannot read properties of null
+(reading 'claims')"). `scripts/dev-base44.sh` writes a gitignored `.env.local`
+that overrides `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` /
+`VITE_SUPABASE_PROJECT_ID` with the real values from the OS env, so client and
+server share one project. Users must authenticate against the real project.
