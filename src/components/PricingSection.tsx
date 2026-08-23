@@ -1,15 +1,42 @@
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Check, Sparkles, Zap } from "lucide-react";
+import { toast } from "sonner";
 import { plans, type Plan } from "@/data/plans";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { createCheckout } from "@/lib/stripe.functions";
 
 /**
- * TODO(stripe): sostituire con una server function che crea la sessione
- * Stripe Checkout per `plan.priceId` e reindirizza a session.url.
+ * Avvia il checkout Stripe per un pacchetto. La sessione viene creata lato
+ * server (createCheckout): il client passa solo l'id del pacchetto, il Price ID
+ * è determinato dal server dalle env var. L'utente non può scegliere quanti
+ * crediti comprare.
  */
-function startCheckout(plan: Plan) {
-  console.info("[stripe placeholder] checkout per", plan.priceId);
-  window.alert(`Checkout Stripe (placeholder) — ${plan.name}`);
+function useCheckout() {
+  const fetchCheckout = useServerFn(createCheckout);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  async function startCheckout(plan: Plan) {
+    if (loadingId) return;
+    setLoadingId(plan.id);
+    try {
+      const { url } = await fetchCheckout({
+        data: { packageId: plan.id as "starter" | "premium" | "vip" },
+      });
+      window.location.href = url;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.includes("Unauthorized") || msg.includes("Authentication")) {
+        window.location.href = "/auth";
+        return;
+      }
+      toast.error(msg || "Impossibile avviare il checkout. Riprova.");
+      setLoadingId(null);
+    }
+  }
+
+  return { startCheckout, loadingId };
 }
 
 /** Formattazione stabile lato server e client (separatore delle migliaia italiano). */
@@ -19,6 +46,8 @@ const formatCredits = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, 
 const perMessage = (plan: Plan) => (plan.price / plan.credits).toFixed(3).replace(".", ",");
 
 export function PricingSection({ compact = false }: { compact?: boolean }) {
+  const { startCheckout, loadingId } = useCheckout();
+
   return (
     <div className="grid gap-6 md:grid-cols-3 md:items-center">
       {plans.map((plan) => (
@@ -82,8 +111,9 @@ export function PricingSection({ compact = false }: { compact?: boolean }) {
               size="lg"
               className="mt-8 w-full"
               onClick={() => startCheckout(plan)}
+              disabled={loadingId === plan.id}
             >
-              Scegli {plan.name}
+              {loadingId === plan.id ? "Reindirizzamento…" : `Scegli ${plan.name}`}
             </Button>
 
             <p className="mt-3 text-center text-[11px] text-muted-foreground">

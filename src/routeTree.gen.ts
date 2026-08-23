@@ -13,12 +13,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CharactersRouteImport } from './routes/characters'
+import { Route as PaymentCancelledRouteImport } from './routes/payment-cancelled'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedPaymentSuccessRouteImport } from './routes/_authenticated/payment-success'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedChatCharacterIdRouteImport } from './routes/_authenticated/chat.$characterId'
 import { Route as ApiPublicAiRepliesRouteImport } from './routes/api/public/ai-replies'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as AuthenticatedAdminCharactersIndexRouteImport } from './routes/_authenticated/admin/characters/index'
 import { Route as AuthenticatedAdminCharactersIdRouteImport } from './routes/_authenticated/admin/characters/$id'
 import { Route as AuthenticatedAdminCharactersNewRouteImport } from './routes/_authenticated/admin/characters/new'
@@ -42,6 +45,11 @@ const CharactersRoute = CharactersRouteImport.update({
   path: '/characters',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PaymentCancelledRoute = PaymentCancelledRouteImport.update({
+  id: '/payment-cancelled',
+  path: '/payment-cancelled',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
@@ -57,6 +65,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPaymentSuccessRoute =
+  AuthenticatedPaymentSuccessRouteImport.update({
+    id: '/payment-success',
+    path: '/payment-success',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -71,6 +85,11 @@ const AuthenticatedChatCharacterIdRoute =
 const ApiPublicAiRepliesRoute = ApiPublicAiRepliesRouteImport.update({
   id: '/api/public/ai-replies',
   path: '/api/public/ai-replies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe-webhook',
+  path: '/api/public/stripe-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminCharactersIndexRoute =
@@ -96,11 +115,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/characters': typeof CharactersRoute
+  '/payment-cancelled': typeof PaymentCancelledRoute
   '/pricing': typeof PricingRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/payment-success': typeof AuthenticatedPaymentSuccessRoute
   '/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
   '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
+  '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -110,10 +132,13 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/characters': typeof CharactersRoute
+  '/payment-cancelled': typeof PaymentCancelledRoute
   '/pricing': typeof PricingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/payment-success': typeof AuthenticatedPaymentSuccessRoute
   '/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
   '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
+  '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -125,11 +150,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/characters': typeof CharactersRoute
+  '/payment-cancelled': typeof PaymentCancelledRoute
   '/pricing': typeof PricingRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/payment-success': typeof AuthenticatedPaymentSuccessRoute
   '/_authenticated/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
   '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
+  '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/_authenticated/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
@@ -141,11 +169,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/characters'
+    | '/payment-cancelled'
     | '/pricing'
     | '/admin'
     | '/dashboard'
+    | '/payment-success'
     | '/chat/$characterId'
     | '/api/public/ai-replies'
+    | '/api/public/stripe-webhook'
     | '/admin/'
     | '/admin/characters/$id'
     | '/admin/characters/new'
@@ -155,10 +186,13 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/characters'
+    | '/payment-cancelled'
     | '/pricing'
     | '/dashboard'
+    | '/payment-success'
     | '/chat/$characterId'
     | '/api/public/ai-replies'
+    | '/api/public/stripe-webhook'
     | '/admin'
     | '/admin/characters/$id'
     | '/admin/characters/new'
@@ -169,11 +203,14 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/characters'
+    | '/payment-cancelled'
     | '/pricing'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/_authenticated/payment-success'
     | '/_authenticated/chat/$characterId'
     | '/api/public/ai-replies'
+    | '/api/public/stripe-webhook'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/characters/$id'
     | '/_authenticated/admin/characters/new'
@@ -185,8 +222,10 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CharactersRoute: typeof CharactersRoute
+  PaymentCancelledRoute: typeof PaymentCancelledRoute
   PricingRoute: typeof PricingRoute
   ApiPublicAiRepliesRoute: typeof ApiPublicAiRepliesRoute
+  ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -219,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CharactersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/payment-cancelled': {
+      id: '/payment-cancelled'
+      path: '/payment-cancelled'
+      fullPath: '/payment-cancelled'
+      preLoaderRoute: typeof PaymentCancelledRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pricing': {
       id: '/pricing'
       path: '/pricing'
@@ -240,6 +286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/payment-success': {
+      id: '/_authenticated/payment-success'
+      path: '/payment-success'
+      fullPath: '/payment-success'
+      preLoaderRoute: typeof AuthenticatedPaymentSuccessRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -259,6 +312,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/ai-replies'
       fullPath: '/api/public/ai-replies'
       preLoaderRoute: typeof ApiPublicAiRepliesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/stripe-webhook': {
+      id: '/api/public/stripe-webhook'
+      path: '/api/public/stripe-webhook'
+      fullPath: '/api/public/stripe-webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/characters/': {
@@ -306,12 +366,14 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedPaymentSuccessRoute: typeof AuthenticatedPaymentSuccessRoute
   AuthenticatedChatCharacterIdRoute: typeof AuthenticatedChatCharacterIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedPaymentSuccessRoute: AuthenticatedPaymentSuccessRoute,
   AuthenticatedChatCharacterIdRoute: AuthenticatedChatCharacterIdRoute,
 }
 
@@ -323,8 +385,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CharactersRoute: CharactersRoute,
+  PaymentCancelledRoute: PaymentCancelledRoute,
   PricingRoute: PricingRoute,
   ApiPublicAiRepliesRoute: ApiPublicAiRepliesRoute,
+  ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

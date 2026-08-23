@@ -487,6 +487,30 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_events: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          stripe_event_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          stripe_event_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          stripe_event_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       public_characters: {
@@ -586,6 +610,15 @@ export type Database = {
         Returns: boolean
       }
       verify_cron_secret: { Args: { _secret: string }; Returns: boolean }
+      grant_stripe_credits: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_event_id: string
+          p_description: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "user"

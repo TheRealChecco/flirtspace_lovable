@@ -22,6 +22,31 @@
       "name": "GROQ_API_KEY",
       "description": "Groq API key for server-side chat replies (src/lib/ai/provider.ts). Optional at boot; required for the chat AI feature.",
       "requiredAtBoot": false
+    },
+    {
+      "name": "STRIPE_SECRET_KEY",
+      "description": "Stripe secret key (sk_test_... or sk_live_...). Server-side only — checkout session creation + webhook. Get it from Stripe Dashboard → Developers → API keys.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "STRIPE_WEBHOOK_SECRET",
+      "description": "Stripe webhook signing secret (whsec_...). Server-side only — verifies the /api/public/stripe-webhook signature. Get it from Stripe Dashboard → Developers → Webhooks (or `stripe listen --forward-to` for local testing).",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "STRIPE_PRICE_STARTER",
+      "description": "Stripe Price ID (price_...) for the Starter package (9€ one-time, 500 credits). Create the product/price in Stripe Dashboard → Products.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "STRIPE_PRICE_PREMIUM",
+      "description": "Stripe Price ID (price_...) for the Premium package (24€ one-time, 2000 credits). Create the product/price in Stripe Dashboard → Products.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "STRIPE_PRICE_VIP",
+      "description": "Stripe Price ID (price_...) for the VIP package (59€ one-time, 6000 credits). Create the product/price in Stripe Dashboard → Products.",
+      "requiredAtBoot": false
     }
   ]
 }

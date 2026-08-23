@@ -81,12 +81,23 @@ export const sendChatMessage = createServerFn({ method: "POST" })
     const conversation = await getOwnedConversation(context.supabase, data.conversationId);
     if (!conversation) throw new Error("Conversazione non trovata");
 
-    const userMessage = await insertChatMessage(
-      context.supabase,
-      conversation.id,
-      "user",
-      data.text,
-    );
+    // Scala 1 credito atomicamente (race-safe, impossibile sotto zero).
+    const { spendCredit, refundCredit } = await import("@/lib/credits.server");
+    await spendCredit(context.userId);
+
+    let userMessage;
+    try {
+      userMessage = await insertChatMessage(
+        context.supabase,
+        conversation.id,
+        "user",
+        data.text,
+      );
+    } catch (err) {
+      // Messaggio non salvato: rimborsa il credito, l'utente non lo perde.
+      await refundCredit(context.userId, "Rimborso: messaggio non salvato");
+      throw err;
+    }
 
     // Un solo job per messaggio utente: l'indice unico evita duplicati.
     await scheduleReply(context.supabase, conversation.id, userMessage.id);

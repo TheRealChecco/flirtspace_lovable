@@ -66,6 +66,24 @@ Workers URL) when going to production; if empty the cron no-ops and replies are
 still delivered by client-side polling while a chat is open. The old migration
 hardcoded an external preview URL — do not restore it.
 
+### Stripe (crediti a pagamento)
+Pacchetti una tantum venduti via Stripe Checkout: Starter 9€/500, Premium
+24€/2000 (evidenziato "Il più scelto"), VIP 59€/6000. Il client
+(`PricingSection`) chiama la server function `createCheckout`
+(`src/lib/stripe.functions.ts`) passando solo l'id del pacchetto; il server
+mappa l'id al Price ID Stripe dalle env var `STRIPE_PRICE_STARTER/PREMIUM/VIP`
+e crea la Checkout Session (mode `payment`, una tantum). L'utente non sceglie i
+crediti. Il webhook `/api/public/stripe-webhook` verifica la firma
+(`STRIPE_WEBHOOK_SECRET`), determina i crediti dal Price ID effettivamente
+pagato e accredita atomicamente via RPC `grant_stripe_credits` (idempotente su
+`public.stripe_events`). La migration `20260824000000_stripe_credits.sql` crea
+la tabella + la RPC — va applicata nel SQL editor Supabase (non eseguibile via
+REST con la service role key). I crediti sono scalati nella chat da `spendCredit`
+(`src/lib/credits.server.ts`, UPDATE condizionato atomico, race-safe, mai sotto
+zero) e rimborsati se la risposta IA fallisce. Tutte le chiavi Stripe sono
+server-side solo. Pagina di ritorno: `/payment-success` (poll del saldo, non
+accredita) e `/payment-cancelled`.
+
 ### Chat (risposta immediata)
 The reply used to be scheduled 1-20 min in the future (`REPLY_DELAY_*_MINUTES`
 in `ai.server.ts`) and only processed by `runDueReplyJobs` once `deliver_at`
