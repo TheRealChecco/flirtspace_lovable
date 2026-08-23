@@ -5,12 +5,12 @@
   "secrets": [
     {
       "name": "SUPABASE_URL",
-      "description": "Supabase project URL (https://<project>.supabase.co). Required at boot — the client/server Supabase clients throw without it.",
+      "description": "Supabase project URL (https://<project>.supabase.co). Required at boot \u2014 the client/server Supabase clients throw without it.",
       "requiredAtBoot": true
     },
     {
       "name": "SUPABASE_PUBLISHABLE_KEY",
-      "description": "Supabase publishable (anon) key. Required at boot — used by the browser client and the SSR auth middleware.",
+      "description": "Supabase publishable (anon) key. Required at boot \u2014 used by the browser client and the SSR auth middleware.",
       "requiredAtBoot": true
     },
     {
@@ -19,8 +19,8 @@
       "requiredAtBoot": false
     },
     {
-      "name": "OPENAI_API_KEY",
-      "description": "OpenAI API key for server-side chat replies (src/lib/ai.server.ts). Optional at boot; required for the chat AI feature.",
+      "name": "GROQ_API_KEY",
+      "description": "Groq API key for server-side chat replies (src/lib/ai/provider.ts). Optional at boot; required for the chat AI feature.",
       "requiredAtBoot": false
     }
   ]

@@ -1,12 +1,14 @@
 import type { CharacterRecord } from "@/types/database";
+import { chatCompletion, AiProviderError, type ChatMessage } from "@/lib/ai/provider";
 
 /**
  * Servizio AI lato server (mai importato dal browser).
  *
- * La chiave OpenAI vive solo sul server (`OPENAI_API_KEY`) e non viene mai
- * esposta al client. Per cambiare modello in futuro basta modificare `CHAT_MODEL` qui.
+ * Il provider concreto (Groq) è isolato in `src/lib/ai/provider.ts`; qui vivono
+ * solo la costruzione del contesto del personaggio e l'orchestrazione della
+ * risposta. La chiave API vive solo sul server e non viene mai esposta al
+ * client. Per cambiare modello/provider basta modificare `provider.ts`.
  */
-const CHAT_MODEL = "gpt-5-mini";
 
 /* --------------------------- Parametri configurabili -------------------------- */
 
@@ -16,21 +18,21 @@ export const RECENT_MESSAGE_LIMIT = 20;
 export const MEMORY_LIMIT = 10;
 /** Ogni quanti nuovi messaggi il riepilogo viene aggiornato in modo incrementale. */
 export const SUMMARY_UPDATE_THRESHOLD = 20;
-/** Ritardo naturale della risposta (minuti), generato casualmente lato server. */
+/**
+ * Ritardo naturale della risposta (minuti), per uso futuro.
+ * Attualmente disattivato: `scheduleReply` imposta `deliver_at = now` e
+ * `sendChatMessage` elabora subito il job. Per riattivare un ritardo
+ * configurabile per personaggio, calcolare `deliver_at = now + delay` in
+ * `scheduleReply` e rimuovere la chiamata diretta a `runDueReplyJobs` in
+ * `sendChatMessage` (se ne occuperanno polling/cron).
+ */
 export const REPLY_DELAY_MIN_MINUTES = 1;
 export const REPLY_DELAY_MAX_MINUTES = 20;
 
 export type ChatTurn = { role: "user" | "assistant"; text: string };
 
-export class AiGatewayError extends Error {
-  constructor(
-    message: string,
-    readonly status: number,
-  ) {
-    super(message);
-    this.name = "AiGatewayError";
-  }
-}
+/** Alias mantenuto per compatibilità con i consumer esistenti (jobs.server). */
+export { AiProviderError as AiGatewayError };
 
 /* ------------------------- Costruzione del contesto ------------------------- */
 
@@ -155,64 +157,17 @@ export function buildSystemPrompt(c: CharacterRecord): string {
 
 /* ----------------------------- Chiamata al modello ---------------------------- */
 
-/** Chiamata generica al gateway (streaming consumato lato server). */
+/** Chiamata generica al provider AI (contesto system + turni di conversazione). */
 async function callModel(
   instructions: string,
   input: ChatTurn[],
+  opts: { json?: boolean } = {},
 ): Promise<string> {
-  const apiKey = process.env["OPENAI_API_KEY"];
-
-  if (!apiKey) {
-    throw new AiGatewayError(
-      "Configurazione OpenAI mancante sul server",
-      500,
-    );
-  }
-
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: CHAT_MODEL,
-      instructions,
-      input: input.map((turn) => ({
-        role: turn.role,
-        content: [
-          {
-            type: turn.role === "user" ? "input_text" : "output_text",
-            text: turn.text,
-          },
-        ],
-      })),
-    }),
-  });
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => "");
-
-    throw new AiGatewayError(
-      detail.slice(0, 300) || `Errore HTTP ${response.status}`,
-      response.status,
-    );
-  }
-
-  const data = (await response.json()) as {
-    output_text?: string;
-  };
-
-  const reply = data.output_text?.trim();
-
-  if (!reply) {
-    throw new AiGatewayError(
-      "OpenAI ha restituito una risposta vuota",
-      502,
-    );
-  }
-
-  return reply;
+  const messages: ChatMessage[] = [
+    { role: "system", content: instructions },
+    ...input.map((turn) => ({ role: turn.role, content: turn.text })),
+  ];
+  return chatCompletion(messages, { json: opts.json });
 }
 
 /**
@@ -272,6 +227,7 @@ export async function generateJson<T>(instructions: string, prompt: string): Pro
   const raw = await callModel(
     `${instructions}\n\nRispondi ESCLUSIVAMENTE con JSON valido, senza testo aggiuntivo e senza blocchi di codice.`,
     [{ role: "user", text: prompt }],
+    { json: true },
   );
   const cleaned = raw
     .replace(/^```(?:json)?/i, "")
@@ -285,54 +241,4 @@ export async function generateJson<T>(instructions: string, prompt: string): Pro
   } catch {
     return null;
   }
-}
-
-
-/** Legge lo stream SSE del gateway e accumula il testo della risposta. */
-async function readStreamedText(body: ReadableStream<Uint8Array>): Promise<string> {
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let text = "";
-  let failure: string | null = null;
-
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-
-    let boundary: number;
-    while ((boundary = buffer.indexOf("\n\n")) >= 0) {
-      const rawEvent = buffer.slice(0, boundary);
-      buffer = buffer.slice(boundary + 2);
-      for (const line of rawEvent.split("\n")) {
-        if (!line.startsWith("data:")) continue;
-        const payload = line.slice(5).trim();
-        if (!payload || payload === "[DONE]") continue;
-        try {
-          const evt = JSON.parse(payload) as {
-            type?: string;
-            delta?: string;
-            message?: string;
-            error?: { message?: string };
-            response?: { output_text?: string };
-          };
-          if (evt.type === "response.output_text.delta" && typeof evt.delta === "string") {
-            text += evt.delta;
-          } else if (evt.type === "response.completed" && !text && evt.response?.output_text) {
-            text = evt.response.output_text;
-          } else if (evt.type === "response.failed" || evt.type === "error") {
-            failure = evt.error?.message ?? evt.message ?? "Generazione fallita";
-          }
-        } catch {
-          // Frammento JSON parziale: lo gestisce il prossimo evento completo.
-        }
-      }
-    }
-  }
-
-  if (failure) throw new AiGatewayError(failure, 502);
-  const reply = text.trim();
-  if (!reply) throw new AiGatewayError("Il modello ha restituito una risposta vuota", 502);
-  return reply;
 }

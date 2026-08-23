@@ -11,7 +11,7 @@
 
 ## Base44 dev environment
 
-Stack: TanStack Start (SSR) + Vite + React, Supabase (hosted), OpenAI. Package
+Stack: TanStack Start (SSR) + Vite + React, Supabase (hosted), Groq. Package
 manager in the repo is Bun (`bun.lock`, `bunfig.toml`), but the Base44 compose
 runs the dev server under **Node**, not Bun — see the note below.
 
@@ -32,7 +32,7 @@ Node. Do not switch the compose back to `oven/bun` until that Bun fix ships.
 version) — corrected to `"@supabase/ssr": "^0.12.4"`.
 
 ### Secrets (optional at boot)
-- `OPENAI_API_KEY` — server-side chat replies (`src/lib/ai.server.ts`).
+- `GROQ_API_KEY` — server-side chat replies via Groq (`src/lib/ai/provider.ts`).
 - `SUPABASE_SERVICE_ROLE_KEY` — server-side admin ops (`src/integrations/supabase/client.server.ts`).
 The Supabase publishable keys (public) already live in the repo `.env` and are
 enough to boot and render the landing/characters/pricing pages. Both secrets are
@@ -44,7 +44,7 @@ The SSR runs in **workerd** (Cloudflare runtime via `@cloudflare/vite-plugin`).
 `node:22-slim` ships **no system CA bundle**, and workerd verifies outbound TLS
 against the OS store (unlike Node, which bundles its own CAs). Without
 `ca-certificates`, every server-side HTTPS call (Supabase `getClaims()`, REST
-queries, OpenAI) fails with `unable to get local issuer certificate`, which
+queries, Groq) fails with `unable to get local issuer certificate`, which
 surfaced as "Cannot read properties of null (reading 'claims')" in the chat.
 `Dockerfile.base44` installs `ca-certificates` to fix this. Do not drop it.
 
@@ -84,11 +84,10 @@ passed, so the UI sat on "Sta preparando una risposta…" for minutes (the
 `sendChatMessage` calls `runDueReplyJobs` immediately and returns the generated
 reply (`replyMessage`) to the client, so the response appears as soon as the
 mutation resolves. The delay constants and the job/claim/cron architecture are
-kept for future re-enablement. **OpenAI credits**: the configured
-`OPENAI_API_KEY` currently returns 429 "no credits remaining" — replies cannot
-be generated until credits are added to the OpenAI account. With credits
-exhausted the reply is marked `failed` immediately (no hang) and the retry
-banner shows.
+kept for future re-enablement. The AI provider is Groq (`openai/gpt-oss-20b`),
+abstracted behind `src/lib/ai/provider.ts`. If Groq fails (auth, rate limit,
+timeout, empty response) the reply is marked `failed` immediately (no hang)
+and the retry banner shows; the error kind is logged.
 
 ### Verify
 `curl -sf http://localhost:3000/` returns the SSR HTML (Italian, FlirtSpace

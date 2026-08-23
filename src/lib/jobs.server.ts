@@ -54,7 +54,7 @@ export async function runDueReplyJobs(): Promise<{ processed: number; failed: nu
       failed += 1;
       const message =
         err instanceof AiGatewayError
-          ? `AI ${err.status}`
+          ? `AI ${err.status} (${err.kind})`
           : err instanceof Error
             ? err.message.slice(0, 200)
             : "Errore sconosciuto";

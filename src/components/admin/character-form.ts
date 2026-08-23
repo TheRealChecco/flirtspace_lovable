@@ -233,7 +233,7 @@ export function toPayload(s: CharacterFormState): CharacterInsert {
     eye_color: nullable(s.eye_color),
     height_cm: numOrNull(s.height_cm),
     clothing_style: nullable(s.clothing_style),
-    // Sintesi auto-generata dai tratti: base per i futuri prompt OpenAI.
+    // Sintesi auto-generata dai tratti: base per i futuri prompt AI.
     personality: TRAITS.map((t) => `${t.label} ${s.traits[t.key]}/10`).join(", "),
     tags: s.tags,
     interests: s.interests,

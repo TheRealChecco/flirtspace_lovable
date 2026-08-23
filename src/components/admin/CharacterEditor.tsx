@@ -424,7 +424,7 @@ export function CharacterEditor({ initial }: { initial?: CharacterRecord }) {
             <div className="flex gap-3 rounded-2xl border border-primary/25 bg-primary/10 p-4 text-sm">
               <ShieldQuestion className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <p className="text-muted-foreground">
-                Questi campi alimenteranno l'integrazione con il modello linguistico (es. OpenAI).
+                Questi campi alimenteranno l'integrazione con il modello linguistico (es. Groq).
                 Non sono mai esposti pubblicamente: solo gli admin possono leggerli.
               </p>
             </div>
