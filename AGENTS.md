@@ -82,3 +82,15 @@ and the retry banner shows; the error kind is logged.
 `curl -sf http://localhost:3000/` returns the SSR HTML (Italian, FlirtSpace
 landing). The external-host check also passes: `curl -sf -H "Host:
 external-preview.example.com" http://localhost:3000/`.
+
+## workerd dev runtime & server secrets
+
+The TanStack Start SSR runs inside **workerd** (Cloudflare runtime) via
+`@cloudflare/vite-plugin`, even in dev. workerd does **not** expose the
+container's OS environment through `process.env` — server-side secrets must
+come from a `.dev.vars` file (gitignored), which the plugin reads and surfaces
+as `process.env` (nodejs_compat). `scripts/dev-base44.sh` bridges the
+platform-delivered OS env (`GROQ_API_KEY`, `SUPABASE_*`) into `.dev.vars` before
+starting Vite. Production is unchanged: secrets are set as Cloudflare secrets.
+Verify the SSR sees a key via `POST /api/public/ai-replies` with a fake
+`x-cron-secret` — `401 Unauthorized` means the env reached the worker.

@@ -21,7 +21,9 @@ services:
     environment:
       # pass the preview suffix so the dev server can allow the external origin
       - BASE44_PUBLIC_HOST_SUFFIX=${BASE44_PUBLIC_HOST_SUFFIX}
-    command: sh -c "npm install --no-audit --no-fund && node node_modules/.bin/vite dev --host 0.0.0.0 --port 3000"
+    # Generates .dev.vars (gitignored) from the OS env so the workerd SSR
+    # runtime sees server secrets via process.env (workerd ignores OS env).
+    command: sh scripts/dev-base44.sh
     restart: unless-stopped
 
 volumes:
