@@ -1,8 +1,9 @@
 ## Base44 dev environment
 
 Stack: TanStack Start (SSR) + Vite + React, Supabase (hosted), Groq. Package
-manager in the repo is Bun (`bun.lock`, `bunfig.toml`), but the Base44 compose
-runs the dev server under **Node**, not Bun — see the note below.
+manager is **npm** (`package-lock.json`); the `bun.lock` / `bunfig.toml` Bun
+leftovers were removed during cleanup. The Base44 compose runs the dev server
+under **Node**, not Bun — see the note below.
 
 ### Running
 `docker compose -f docker-compose.base44.yml up -d` → Vite dev server on port
@@ -53,9 +54,9 @@ project — re-run `supabase/migrations/*.sql` in the SQL editor.
 
 ### Logo
 The logo is the local `public/favicon.png` (64×64), referenced as `/favicon.png`
-in SiteHeader, SiteFooter, auth and admin. The old Lovable R2 asset
+in SiteHeader, SiteFooter, auth and admin. The old external R2 asset
 (`src/assets/flirtspace-logo.png.asset.json`, served from `/__l5e/...`) was
-removed — it was a runtime dependency on Lovable's CDN and 404'd outside Lovable.
+removed — it was a runtime dependency on an external CDN and 404'd outside that platform.
 
 ### Cron AI replies (portable)
 `private.dispatch_ai_replies()` (scheduled via `pg_cron` every minute) reads its
@@ -63,7 +64,7 @@ target URL from `private.app_config.ai_replies_endpoint` (migration
 `20260822020000_...`). Set that to the deployed app URL (e.g. the Cloudflare
 Workers URL) when going to production; if empty the cron no-ops and replies are
 still delivered by client-side polling while a chat is open. The old migration
-hardcoded a Lovable preview URL — do not restore it.
+hardcoded an external preview URL — do not restore it.
 
 ### Chat (risposta immediata)
 The reply used to be scheduled 1-20 min in the future (`REPLY_DELAY_*_MINUTES`

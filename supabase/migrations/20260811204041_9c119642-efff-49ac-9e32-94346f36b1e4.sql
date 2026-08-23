@@ -99,7 +99,10 @@ BEGIN
   END IF;
   SELECT value INTO secret FROM private.app_config WHERE key = 'cron_secret';
   PERFORM extensions.net_http_post(
-    url := 'https://project--f7c730e0-6299-4b02-88e0-4666f3ba7a2f-dev.lovable.app/api/public/ai-replies',
+    -- Endpoint superseded by migration 20260822020000: dispatch_ai_replies() now
+    -- reads the URL from private.app_config('ai_replies_endpoint'). This placeholder
+    -- only exists for the historical record; the function is redefined below.
+    url := 'https://placeholder-set-ai_replies_endpoint.invalid/api/public/ai-replies',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', secret),
     body := '{}'::jsonb,
     timeout_milliseconds := 55000

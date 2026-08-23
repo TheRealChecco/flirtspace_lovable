@@ -1,5 +1,5 @@
 -- Rende configurabile l'endpoint del cron che consegna le risposte IA pianificate.
--- Prima l'URL dell'app era hardcoded a un ambiente Lovable di preview, il che
+-- Prima l'URL dell'app era hardcoded a un ambiente di preview esterno, il che
 -- legava il database a un host specifico e non portabile. Ora l'URL viene letto
 -- da private.app_config (chiave 'ai_replies_endpoint'): impostalo al tuo dominio
 -- di produzione (es. https://flirtspace.example.workers.dev) quando fai il deploy.
