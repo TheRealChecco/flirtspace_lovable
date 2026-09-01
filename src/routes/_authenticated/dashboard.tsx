@@ -96,8 +96,10 @@ function Dashboard() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="glass" size="sm">
-              <Settings className="h-4 w-4" /> Impostazioni
+            <Button variant="glass" size="sm" asChild>
+              <Link to="/settings">
+                <Settings className="h-4 w-4" /> Impostazioni
+              </Link>
             </Button>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" /> Esci
@@ -228,8 +230,8 @@ function Dashboard() {
                   <dd>••••••••</dd>
                 </div>
               </dl>
-              <Button variant="glass" size="sm" className="mt-5 w-full">
-                Modifica profilo
+              <Button variant="glass" size="sm" className="mt-5 w-full" asChild>
+                <Link to="/settings/profile">Modifica profilo</Link>
               </Button>
             </div>
 

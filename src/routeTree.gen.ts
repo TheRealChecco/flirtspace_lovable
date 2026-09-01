@@ -20,6 +20,8 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPaymentSuccessRouteImport } from './routes/_authenticated/payment-success'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedChatCharacterIdRouteImport } from './routes/_authenticated/chat.$characterId'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedSettingsProfileRouteImport } from './routes/_authenticated/settings/profile'
 import { Route as ApiPublicAiRepliesRouteImport } from './routes/api/public/ai-replies'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as AuthenticatedAdminCharactersIndexRouteImport } from './routes/_authenticated/admin/characters/index'
@@ -82,6 +84,18 @@ const AuthenticatedChatCharacterIdRoute =
     path: '/chat/$characterId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
+    id: '/settings/',
+    path: '/settings/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsProfileRoute =
+  AuthenticatedSettingsProfileRouteImport.update({
+    id: '/settings/profile',
+    path: '/settings/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicAiRepliesRoute = ApiPublicAiRepliesRouteImport.update({
   id: '/api/public/ai-replies',
   path: '/api/public/ai-replies',
@@ -121,9 +135,11 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/payment-success': typeof AuthenticatedPaymentSuccessRoute
   '/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
+  '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
   '/admin/characters/': typeof AuthenticatedAdminCharactersIndexRoute
@@ -137,9 +153,11 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/payment-success': typeof AuthenticatedPaymentSuccessRoute
   '/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
+  '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
   '/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
   '/admin/characters': typeof AuthenticatedAdminCharactersIndexRoute
@@ -156,9 +174,11 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/payment-success': typeof AuthenticatedPaymentSuccessRoute
   '/_authenticated/chat/$characterId': typeof AuthenticatedChatCharacterIdRoute
+  '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/api/public/ai-replies': typeof ApiPublicAiRepliesRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/admin/characters/$id': typeof AuthenticatedAdminCharactersIdRoute
   '/_authenticated/admin/characters/new': typeof AuthenticatedAdminCharactersNewRoute
   '/_authenticated/admin/characters/': typeof AuthenticatedAdminCharactersIndexRoute
@@ -175,9 +195,11 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/payment-success'
     | '/chat/$characterId'
+    | '/settings/profile'
     | '/api/public/ai-replies'
     | '/api/public/stripe-webhook'
     | '/admin/'
+    | '/settings/'
     | '/admin/characters/$id'
     | '/admin/characters/new'
     | '/admin/characters/'
@@ -191,9 +213,11 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/payment-success'
     | '/chat/$characterId'
+    | '/settings/profile'
     | '/api/public/ai-replies'
     | '/api/public/stripe-webhook'
     | '/admin'
+    | '/settings'
     | '/admin/characters/$id'
     | '/admin/characters/new'
     | '/admin/characters'
@@ -209,9 +233,11 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/payment-success'
     | '/_authenticated/chat/$characterId'
+    | '/_authenticated/settings/profile'
     | '/api/public/ai-replies'
     | '/api/public/stripe-webhook'
     | '/_authenticated/admin/'
+    | '/_authenticated/settings/'
     | '/_authenticated/admin/characters/$id'
     | '/_authenticated/admin/characters/new'
     | '/_authenticated/admin/characters/'
@@ -307,6 +333,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatCharacterIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/profile': {
+      id: '/_authenticated/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof AuthenticatedSettingsProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/ai-replies': {
       id: '/api/public/ai-replies'
       path: '/api/public/ai-replies'
@@ -368,6 +408,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPaymentSuccessRoute: typeof AuthenticatedPaymentSuccessRoute
   AuthenticatedChatCharacterIdRoute: typeof AuthenticatedChatCharacterIdRoute
+  AuthenticatedSettingsProfileRoute: typeof AuthenticatedSettingsProfileRoute
+  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -375,6 +417,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPaymentSuccessRoute: AuthenticatedPaymentSuccessRoute,
   AuthenticatedChatCharacterIdRoute: AuthenticatedChatCharacterIdRoute,
+  AuthenticatedSettingsProfileRoute: AuthenticatedSettingsProfileRoute,
+  AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
