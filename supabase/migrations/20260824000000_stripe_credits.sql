@@ -52,5 +52,5 @@ BEGIN
   RETURN TRUE;
 END;
 $$;
-GRANT EXECUTE ON public.grant_stripe_credits TO service_role;
-REVOKE EXECUTE ON public.grant_stripe_credits FROM anon, authenticated, public;
+GRANT EXECUTE ON FUNCTION public.grant_stripe_credits(uuid, integer, text, text) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.grant_stripe_credits(uuid, integer, text, text) FROM anon, authenticated, public;
