@@ -79,7 +79,8 @@ function AuthPage() {
         const { data } = await supabase.auth.getSession();
         if (data.session) {
           await router.invalidate();
-          void navigate({ to: safePath(redirectTo) });
+          // Dopo la registrazione l'utente atterra sulla pagina dei Personaggi.
+          void navigate({ to: redirectTo ? safePath(redirectTo) : "/characters" });
         } else {
           setNotice("Ti abbiamo inviato un'email: conferma l'indirizzo per attivare l'account.");
         }
