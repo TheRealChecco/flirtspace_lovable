@@ -1,9 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Crown, LogOut, Mail, User } from "lucide-react";
+import { ArrowLeft, Lock, LogOut, Mail, User } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { getProfile } from "@/lib/api";
 
@@ -11,13 +10,6 @@ export const Route = createFileRoute("/_authenticated/settings/")({
   head: () => ({ meta: [{ title: "Impostazioni — FlirtSpace" }] }),
   component: SettingsPage,
 });
-
-const PLAN_LABEL: Record<string, string> = {
-  free: "Gratuito",
-  starter: "Starter",
-  premium: "Premium",
-  vip: "VIP",
-};
 
 /**
  * Pagina Impostazioni: panoramica account (dati già presenti nel profilo
@@ -76,13 +68,9 @@ function SettingsPage() {
               </div>
               <div className="flex items-center justify-between gap-3">
                 <dt className="flex items-center gap-2 text-muted-foreground">
-                  <Crown className="h-4 w-4" /> Piano
+                  <Lock className="h-4 w-4" /> Password
                 </dt>
-                <dd>
-                  <Badge className="rounded-full bg-[image:var(--gradient-primary)] text-primary-foreground">
-                    {PLAN_LABEL[profile?.subscription ?? "free"]}
-                  </Badge>
-                </dd>
+                <dd>••••••••</dd>
               </div>
             </dl>
             <Button variant="glass" size="sm" className="mt-5 w-full" asChild>

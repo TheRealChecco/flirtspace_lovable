@@ -1,9 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Crown, Heart, LogOut, MessageSquare, Settings, Zap } from "lucide-react";
+import { Heart, LogOut, MessageSquare, Settings, Zap } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/use-auth";
 import { listConversations, listFavorites, getProfile } from "@/lib/api";
@@ -16,12 +15,12 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       {
         name: "description",
         content:
-          "Gestisci account, cronologia delle conversazioni, compagni preferiti, saldo crediti e abbonamento.",
+          "Cronologia delle conversazioni, compagni preferiti e saldo crediti.",
       },
       { property: "og:title", content: "Area personale — FlirtSpace" },
       {
         property: "og:description",
-        content: "Cronologia, preferiti, crediti e abbonamento in un unico posto.",
+        content: "Cronologia, preferiti e crediti in un unico posto.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -29,14 +28,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   }),
   component: Dashboard,
 });
-
-const PLAN_LABEL: Record<string, string> = {
-  free: "Gratuito",
-  starter: "Starter",
-  premium: "Premium",
-  vip: "VIP",
-};
-
 
 function formatWhen(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -109,8 +100,8 @@ function Dashboard() {
       </section>
 
       <section className="px-5 pb-20">
-        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-3">
-          {/* Colonna sinistra */}
+        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
+          {/* Colonna principale */}
           <div className="space-y-6 lg:col-span-2">
             {/* Crediti */}
             <div className="surface-card rounded-2xl p-6">
@@ -209,48 +200,6 @@ function Dashboard() {
                   ))}
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Colonna destra */}
-          <div className="space-y-6">
-            <div className="surface-card rounded-2xl p-6">
-              <h2 className="font-display text-lg font-semibold">Account</h2>
-              <dl className="mt-4 space-y-3 text-sm">
-                <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">Nome utente</dt>
-                  <dd className="truncate">{profile?.username ?? "—"}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">Email</dt>
-                  <dd className="truncate">{profile?.email ?? user?.email ?? "—"}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">Password</dt>
-                  <dd>••••••••</dd>
-                </div>
-              </dl>
-              <Button variant="glass" size="sm" className="mt-5 w-full" asChild>
-                <Link to="/settings/profile">Modifica profilo</Link>
-              </Button>
-            </div>
-
-            <div className="surface-card rounded-2xl border-primary/40 p-6">
-              <div className="flex items-center gap-2">
-                <Crown className="h-4 w-4 text-primary" />
-                <h2 className="font-display text-lg font-semibold">Abbonamento</h2>
-              </div>
-              <Badge className="mt-3 rounded-full bg-[image:var(--gradient-primary)] text-primary-foreground">
-                {PLAN_LABEL[profile?.subscription ?? "free"]}
-              </Badge>
-              <p className="mt-3 text-sm text-muted-foreground">
-                {profile?.subscription === "free"
-                  ? "Passa a un piano superiore per memoria a lungo termine, risposte prioritarie e voce."
-                  : "Memoria a lungo termine, risposte prioritarie e risposte vocali sono attive."}
-              </p>
-              <Button variant="hero" size="sm" className="mt-5 w-full" asChild>
-                <Link to="/pricing">Vedi i piani</Link>
-              </Button>
             </div>
           </div>
         </div>
